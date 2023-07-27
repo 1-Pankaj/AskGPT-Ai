@@ -14,6 +14,44 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.2"/>
+        app:layout_constraintVertical_bias="0.15"
+        android:id="@+id/illustration"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/illustration"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="50dp"
+        android:text="Enable the power of GPT Ai on your mobile device, AskGPT now!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        android:id="@+id/textDesc"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terms &amp; Privacy Policy"
+        app:layout_constraintTop_toBottomOf="@id/textDesc"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="80dp"
+        android:id="@+id/textPolicy"/>
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="Start Chatting"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/textPolicy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        android:textColor="@color/white"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

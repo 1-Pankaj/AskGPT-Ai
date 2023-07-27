@@ -5,6 +5,8 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="colorPrimary">#002DE3</item>
         <item name="colorPrimaryVariant">#002DE3</item>
+        <item name="fontFamily">@font/mulish</item>
+        <item name="android:textColor">#0F1828</item>
     </style>
 
     <style name="Theme.AskGPTAi" parent="Base.Theme.AskGPTAi" />
