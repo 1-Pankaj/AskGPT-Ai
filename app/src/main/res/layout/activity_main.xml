@@ -101,17 +101,20 @@
                 android:paddingRight="20dp"
                 android:hint="Email or Phone no."
                 android:textSize="14sp"/>
+
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonContinue"
                 android:layout_width="300dp"
                 android:layout_height="60dp"
+                android:layout_marginTop="28dp"
                 android:text="Continue"
+                android:textColor="@color/white"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/emailEditText"
+                app:layout_constraintHorizontal_bias="0.505"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginTop="30dp"
-                android:id="@+id/buttonContinue"
-                android:textColor="@color/white"/>
+                app:layout_constraintTop_toBottomOf="@id/emailEditText" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -201,6 +204,97 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="70dp"/>
             </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/illustration"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="-50dp"
+        app:cardElevation="0dp"
+        android:visibility="gone"
+        android:id="@+id/cardSignup"
+        app:cardBackgroundColor="#0000FFFF">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <EditText
+                android:layout_width="300dp"
+                android:layout_height="45dp"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:maxLength="55"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/firstnameEditText"
+                android:background="@drawable/edittext"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:hint="First Name"
+                android:textSize="14sp"/>
+            <EditText
+                android:layout_width="300dp"
+                android:layout_height="45dp"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:layout_marginTop="14dp"
+                android:maxLength="55"
+                app:layout_constraintTop_toBottomOf="@id/firstnameEditText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/lastnameEditText"
+                android:background="@drawable/edittext"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:hint="Last Name"
+                android:textSize="14sp"/>
+            <EditText
+                android:layout_width="300dp"
+                android:layout_height="45dp"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:layout_marginTop="14dp"
+                android:maxLength="55"
+                app:layout_constraintTop_toBottomOf="@id/lastnameEditText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/passwordEditText"
+                android:background="@drawable/edittext"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:hint="Password"
+                android:textSize="14sp"/>
+            <EditText
+                android:layout_width="300dp"
+                android:layout_height="45dp"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:layout_marginTop="14dp"
+                android:maxLength="55"
+                app:layout_constraintTop_toBottomOf="@id/passwordEditText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/confirmpassEditText"
+                android:background="@drawable/edittext"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:hint="Confirm Password"
+                android:textSize="14sp"/>
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:text="Continue"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/confirmpassEditText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="30dp"
+                android:id="@+id/btnSignup"
+                android:textColor="@color/white"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
