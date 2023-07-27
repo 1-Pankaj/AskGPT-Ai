@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -57,7 +58,19 @@ class MainActivity : AppCompatActivity() {
         val confirmpassEditText = findViewById<EditText>(R.id.confirmpassEditText)
         val btnSignup = findViewById<MaterialButton>(R.id.btnSignup)
         val cardLoad = findViewById<CardView>(R.id.cardLoad)
+        val cardSplash = findViewById<CardView>(R.id.cardSplash)
+        val parent = findViewById<ConstraintLayout>(R.id.parent)
+        val cardLogin = findViewById<CardView>(R.id.cardLogin)
+        val emailText = findViewById<EditText>(R.id.emailText)
+        val passText = findViewById<EditText>(R.id.passwordText)
+        val loginbtn = findViewById<MaterialButton>(R.id.loginBtn)
+        val forgotPassText = findViewById<TextView>(R.id.forgotPassText)
 
+
+        cardLogin.visibility = CardView.GONE
+        emailText.isEnabled = false
+        passText.isEnabled = false
+        loginbtn.isEnabled = false
         cardLoad.visibility = CardView.GONE
         cardContinue.visibility = CardView.GONE
         cardBack.visibility = CardView.GONE
@@ -79,6 +92,14 @@ class MainActivity : AppCompatActivity() {
             cardBackImage.setImageResource(R.drawable.back)
             emailEditText.setBackgroundResource(R.drawable.edittext)
             googleCard.setCardBackgroundColor(Color.parseColor("#EDEDED"))
+            firstnameEditText.setBackgroundResource(R.drawable.edittext)
+            lastnameEditText.setBackgroundResource(R.drawable.edittext)
+            passwordEditText.setBackgroundResource(R.drawable.edittext)
+            confirmpassEditText.setBackgroundResource(R.drawable.edittext)
+            cardSplash.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
+            parent.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            emailText.setBackgroundResource(R.drawable.edittext)
+            passText.setBackgroundResource(R.drawable.edittext)
         }
         else{
             //night stuff
@@ -86,6 +107,14 @@ class MainActivity : AppCompatActivity() {
             cardBackImage.setImageResource(R.drawable.back_night)
             emailEditText.setBackgroundResource(R.drawable.edittext_night)
             googleCard.setCardBackgroundColor(Color.parseColor("#606060"))
+            firstnameEditText.setBackgroundResource(R.drawable.edittext_night)
+            lastnameEditText.setBackgroundResource(R.drawable.edittext_night)
+            passwordEditText.setBackgroundResource(R.drawable.edittext_night)
+            confirmpassEditText.setBackgroundResource(R.drawable.edittext_night)
+            cardSplash.setCardBackgroundColor(Color.parseColor("#000000"))
+            parent.setBackgroundColor(Color.parseColor("#000000"))
+            emailText.setBackgroundResource(R.drawable.edittext_night)
+            passText.setBackgroundResource(R.drawable.edittext_night)
         }
 
         val illustration_anim = AnimationUtils.loadAnimation(this, R.anim.illustration_anim)
@@ -99,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         val edittext4_anim = AnimationUtils.loadAnimation(this, R.anim.edittext4_anim)
         val putawaygarbage = AnimationUtils.loadAnimation(this, R.anim.putawaygarbage)
         val cardloading_anim = AnimationUtils.loadAnimation(this, R.anim.cardloading_anim)
-
+        val illustrationanim_three = AnimationUtils.loadAnimation(this, R.anim.illustrationanim_three)
 
         cardloading_anim.duration = 400
         putawaygarbage.duration = 0
@@ -111,6 +140,7 @@ class MainActivity : AppCompatActivity() {
         textpolicy_anim.duration = 600
         fade_out.duration = 600
         fade_in.duration = 600
+        illustrationanim_three.duration = 600
         illustration_anim.duration = 600
 
 
@@ -119,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         cogwheelanim1.duration = 1500
         val cogwheelanim2 = AnimationUtils.loadAnimation(this, R.anim.cogwheelanim2)
         cogwheelanim2.duration = 1500
-        val cardSplash = findViewById<CardView>(R.id.cardSplash)
         cardSplash.visibility = CardView.GONE
 
         val handler = Handler(Looper.getMainLooper())
@@ -148,7 +177,6 @@ class MainActivity : AppCompatActivity() {
                         if(it.isSuccessful){
                             val intent = Intent(applicationContext, HomePage::class.java)
                             startActivity(intent)
-                            Toast.makeText(applicationContext, emailText.toString(), Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         else{
@@ -184,8 +212,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         cardBack.setOnClickListener(){
-            illustration_anim.setInterpolator(ReverseInterpolator())
-            illustration.startAnimation(illustration_anim)
+
+            if(cardContinue.visibility == CardView.VISIBLE){
+                illustration_anim.setInterpolator(ReverseInterpolator())
+                illustration.startAnimation(illustration_anim)
+            }
             textDesc.startAnimation(fade_in)
             textpolicy_anim.setInterpolator(ReverseInterpolator())
             textPolicy.startAnimation(textpolicy_anim)
@@ -200,6 +231,8 @@ class MainActivity : AppCompatActivity() {
 
 
             if(cardSignup.visibility == CardView.VISIBLE){
+
+                illustration.startAnimation(illustrationanim_three)
                 cardSignup.startAnimation(fade_out)
                 cardSignup.visibility = CardView.GONE
                 cardSignup.isEnabled = false
@@ -211,33 +244,73 @@ class MainActivity : AppCompatActivity() {
                 emailEditText.isEnabled = true
                 buttonContinue.isEnabled = true
             }
+
+            if(cardLogin.visibility == CardView.VISIBLE){
+
+                illustration.startAnimation(illustrationanim_three)
+                cardLogin.startAnimation(fade_out)
+                cardLogin.visibility = CardView.GONE
+                emailText.isEnabled = false
+                passText.isEnabled = false
+                loginbtn.isEnabled = false
+                emailEditText.isEnabled = true
+                buttonContinue.isEnabled = true
+            }
             cardBack.isEnabled = false
         }
 
         buttonContinue.setOnClickListener(){
-            val emailText = emailEditText.text.toString()
-            if(emailText.isEmpty()){
+            val emailTextData = emailEditText.text.toString()
+            if(emailTextData.isEmpty()){
 
             }else{
-                cardContinue.isEnabled = false
-                cardContinue.startAnimation(fade_out)
-                illustration.startAnimation(illustrationanim_two)
-                emailEditText.isEnabled = false
-                buttonContinue.isEnabled = false
-                cardSignup.isEnabled = true
-                firstnameEditText.isEnabled = true
-                lastnameEditText.isEnabled = true
-                passwordEditText.isEnabled = true
-                confirmpassEditText.isEnabled = true
-                btnSignup.isEnabled = true
-                cardSignup.visibility = CardView.VISIBLE
-                cardSignup.startAnimation(fade_in)
-                firstnameEditText.startAnimation(edittext1_anim)
-                lastnameEditText.startAnimation(edittext2_anim)
-                passwordEditText.startAnimation(edittext3_anim)
-                confirmpassEditText.startAnimation(edittext4_anim)
-                btnSignup.startAnimation(edittext4_anim)
-                emailData = emailText
+                try {
+                    maAuth.fetchSignInMethodsForEmail(emailTextData).addOnCompleteListener {
+
+                        if (it.isSuccessful) {
+                            if (it.result.signInMethods!!.isEmpty()) {
+                                cardContinue.isEnabled = false
+                                cardContinue.startAnimation(fade_out)
+                                illustration.startAnimation(illustrationanim_two)
+                                emailEditText.isEnabled = false
+                                buttonContinue.isEnabled = false
+                                cardSignup.isEnabled = true
+                                firstnameEditText.isEnabled = true
+                                lastnameEditText.isEnabled = true
+                                passwordEditText.isEnabled = true
+                                confirmpassEditText.isEnabled = true
+                                btnSignup.isEnabled = true
+                                cardSignup.visibility = CardView.VISIBLE
+                                cardSignup.startAnimation(fade_in)
+                                firstnameEditText.startAnimation(edittext1_anim)
+                                lastnameEditText.startAnimation(edittext2_anim)
+                                passwordEditText.startAnimation(edittext3_anim)
+                                confirmpassEditText.startAnimation(edittext4_anim)
+                                btnSignup.startAnimation(edittext4_anim)
+                                emailData = emailTextData
+                            } else {
+                                cardContinue.isEnabled = false
+                                cardContinue.startAnimation(fade_out)
+                                illustration.startAnimation(illustrationanim_two)
+                                emailEditText.isEnabled = false
+                                buttonContinue.isEnabled = false
+                                cardLogin.visibility = CardView.VISIBLE
+                                cardLogin.startAnimation(fade_in)
+                                emailText.startAnimation(edittext1_anim)
+                                passText.startAnimation(edittext2_anim)
+                                loginbtn.startAnimation(edittext4_anim)
+                                forgotPassText.startAnimation(edittext3_anim)
+                                emailText.isEnabled = true
+                                passText.isEnabled = true
+                                loginbtn.isEnabled = true
+                            }
+                        }
+                    }
+                }
+                catch (e: Exception){
+                    Log.d("dax", e.message.toString())
+                }
+
             }
         }
 
@@ -263,6 +336,7 @@ class MainActivity : AppCompatActivity() {
             }
             else{
                 try {
+
                     maAuth.createUserWithEmailAndPassword(emailData, passwordText)
                         .addOnCompleteListener {
                             if(it.isSuccessful){
