@@ -3,5 +3,7 @@
     <style name="Base.Theme.AskGPTAi" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">#002DE3</item>
+        <item name="colorPrimaryVariant">#002DE3</item>
     </style>
 </resources>

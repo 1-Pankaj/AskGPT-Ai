@@ -3,6 +3,8 @@
     <style name="Base.Theme.AskGPTAi" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#002DE3</item>
+        <item name="colorPrimaryVariant">#002DE3</item>
     </style>
 
     <style name="Theme.AskGPTAi" parent="Base.Theme.AskGPTAi" />
