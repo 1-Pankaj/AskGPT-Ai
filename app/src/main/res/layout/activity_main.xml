@@ -126,29 +126,36 @@
                     android:layout_height="0.5dp"
                     app:cardElevation="0dp"
                     android:layout_marginTop="6dp"
-                    app:cardBackgroundColor="#343434"/>
+                    app:cardBackgroundColor="#525252"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="    OR    "
                     android:textSize="8dp"
-                    android:textColor="#343434"/>
+                    android:textColor="#525252"/>
                 <androidx.cardview.widget.CardView
                     android:layout_width="90dp"
                     android:layout_height="0.5dp"
                     android:layout_marginTop="6dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="#343434"/>
+                    app:cardBackgroundColor="#525252"/>
             </LinearLayout>
             <androidx.cardview.widget.CardView
                 android:layout_width="300dp"
                 android:layout_height="55dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp"
+                android:id="@+id/googleCard"
+                app:cardBackgroundColor="#EDEDED"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 app:layout_constraintTop_toBottomOf="@id/layoutSeprator"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginTop="40dp">
+                android:layout_marginTop="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0"
+                android:layout_marginBottom="50dp">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -160,6 +167,37 @@
                     android:layout_height="wrap_content"
                     android:text="Continue with Google"
                     android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="70dp"/>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="300dp"
+                android:layout_height="55dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:id="@+id/facebookCard"
+                app:cardBackgroundColor="#1877F2"
+                app:layout_constraintTop_toBottomOf="@id/googleCard"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0"
+                android:layout_marginBottom="50dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/facebook"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="20dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Continue with Facebook"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="70dp"/>
             </androidx.cardview.widget.CardView>
