@@ -57,18 +57,18 @@
         android:textColor="@color/white"/>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardBack"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="#0000FFFF"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="20dp"
         android:clickable="true"
-        android:id="@+id/cardBack"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:layout_marginLeft="15dp">
+        app:cardBackgroundColor="#0000FFFF"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
         <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
@@ -370,6 +370,7 @@
                 android:layout_height="45dp"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
+                app:layout_constraintTop_toTopOf="parent"
                 android:maxLength="55"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
