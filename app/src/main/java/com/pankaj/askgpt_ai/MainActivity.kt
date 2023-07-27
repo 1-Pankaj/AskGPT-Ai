@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.postDelayed
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -166,8 +167,8 @@ class MainActivity : AppCompatActivity() {
             if (emailText != null && passText != null) {
                 if(emailText.equals("emailKey") || passText.equals("passKey")){
                     cardSplash.startAnimation(fade_out)
+                    cardAi.startAnimation(fade_out)
                     cardSplash.setBackgroundColor(Color.parseColor("#0000FFFF"))
-                    cardAi.startAnimation(putawaygarbage)
                     cardAi.visibility = CardView.GONE
                     cardSplash.visibility = CardView.GONE
                     cardSplash.isEnabled = false
@@ -180,9 +181,9 @@ class MainActivity : AppCompatActivity() {
                             finish()
                         }
                         else{
+                            cardAi.startAnimation(fade_out)
                             cardSplash.startAnimation(fade_out)
                             cardSplash.setBackgroundColor(Color.parseColor("#0000FFFF"))
-                            cardAi.startAnimation(putawaygarbage)
                             cardAi.visibility = CardView.GONE
                             cardSplash.visibility = CardView.GONE
                             cardSplash.isEnabled = false
@@ -192,6 +193,9 @@ class MainActivity : AppCompatActivity() {
             }
         }, 3100)
 
+        handler.postDelayed({
+            cardAi.startAnimation(putawaygarbage)
+        }, 3500)
 
 
         buttonStart.setOnClickListener(){
@@ -269,6 +273,7 @@ class MainActivity : AppCompatActivity() {
 
                         if (it.isSuccessful) {
                             if (it.result.signInMethods!!.isEmpty()) {
+
                                 cardContinue.isEnabled = false
                                 cardContinue.startAnimation(fade_out)
                                 illustration.startAnimation(illustrationanim_two)
@@ -289,6 +294,7 @@ class MainActivity : AppCompatActivity() {
                                 btnSignup.startAnimation(edittext4_anim)
                                 emailData = emailTextData
                             } else {
+
                                 cardContinue.isEnabled = false
                                 cardContinue.startAnimation(fade_out)
                                 illustration.startAnimation(illustrationanim_two)
@@ -300,17 +306,48 @@ class MainActivity : AppCompatActivity() {
                                 passText.startAnimation(edittext2_anim)
                                 loginbtn.startAnimation(edittext4_anim)
                                 forgotPassText.startAnimation(edittext3_anim)
-                                emailText.isEnabled = true
+                                emailText.setText(emailTextData)
+                                emailText.isEnabled = false
                                 passText.isEnabled = true
                                 loginbtn.isEnabled = true
+                                emailData = emailTextData
+
+
+
+
                             }
                         }
                     }
                 }
                 catch (e: Exception){
                     Log.d("dax", e.message.toString())
+
                 }
 
+            }
+        }
+
+        loginbtn.setOnClickListener(){
+            val passTextData = passText.text.toString()
+            val emailTextData = emailText.text.toString()
+            if(passTextData.isEmpty() && emailTextData.isEmpty()){
+
+            }
+            else{
+                if(passTextData.length < 6){
+                    passText.setError("Atleast 6 Characters!")
+                }else{
+                    maAuth.signInWithEmailAndPassword(emailTextData, passTextData).addOnCompleteListener{
+                        if(it.isSuccessful){
+                            Paper.book().write(DatabaseModule().emailKey, emailTextData)
+                            Paper.book().write(DatabaseModule().passKey, passTextData)
+
+                            val intent = Intent(applicationContext, HomePage::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+                }
             }
         }
 
