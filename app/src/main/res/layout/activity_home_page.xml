@@ -1,9 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomePage">
+    tools:context=".HomePage"
+    android:id="@+id/parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/click"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        android:elevation="100dp"
+        android:id="@+id/bottomsheet"
+        android:background="@drawable/bottom_sheet">
+        <androidx.cardview.widget.CardView
+            android:layout_width="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#B1B1B1"
+            app:cardCornerRadius="10dp"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            app:cardCornerRadius="20dp"
+            android:layout_gravity="center_horizontal|end"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            app:cardBackgroundColor="#0000FFFF"
+            app:cardElevation="0dp"
+            app:strokeColor="#ADADAD"
+            android:id="@+id/settingCard"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/setting"
+                android:id="@+id/settingIcon"
+                android:layout_gravity="center"/>
+        </com.google.android.material.card.MaterialCardView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="55dp"
+            android:padding="15dp"
+            android:layout_marginBottom="90dp"/>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="30dp"
+            android:layout_marginHorizontal="25dp"
+            app:cardElevation="0dp"
+            android:id="@+id/messageTypeCard"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="30dp"
+            app:cardBackgroundColor="#EFEDED">
+            <EditText
+                android:inputType="textLongMessage"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:background="#0000FFFF"
+                android:hint="Type your message here"
+                android:textSize="14sp"
+                android:padding="20dp"/>
+            <androidx.cardview.widget.CardView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:cardCornerRadius="30dp"
+                android:layout_gravity="center_vertical|end"
+                app:cardBackgroundColor="#1D1E35"
+                app:cardElevation="0dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginEnd="5dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/send"
+                    app:tint="@color/white"
+                    android:layout_gravity="center"/>
+            </androidx.cardview.widget.CardView>
+
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
