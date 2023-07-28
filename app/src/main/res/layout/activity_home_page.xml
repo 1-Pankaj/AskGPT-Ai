@@ -9,21 +9,86 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.google.android.material.button.MaterialButton
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/flipped_illustration"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.2"
+            android:id="@+id/mainIllustration"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unleash"
+            android:textStyle="bold"
+            android:textSize="35sp"
+            app:layout_constraintTop_toBottomOf="@id/mainIllustration"
+            app:layout_constraintLeft_toLeftOf="@id/mainIllustration"
+            android:layout_marginTop="-100dp"
+            android:layout_marginLeft="-10dp"
+            android:id="@+id/unleashText"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="the power"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/unleashText"
+            app:layout_constraintLeft_toLeftOf="@id/unleashText"
+            android:layout_marginTop="15dp"
+            android:id="@+id/powertext"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="of GPT Ai now!"
+            android:textStyle="bold"
+            android:textSize="35sp"
+            android:id="@+id/gptText"
+            app:layout_constraintTop_toBottomOf="@id/powertext"
+            app:layout_constraintLeft_toLeftOf="@id/powertext"
+            android:layout_marginTop="15dp"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
             android:id="@+id/click"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:strokeColor="#909090"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="#0000FFFF"
+            android:clickable="true"
+            app:layout_constraintTop_toBottomOf="@id/gptText"
+            app:layout_constraintLeft_toLeftOf="@id/gptText"
+            android:layout_marginTop="40dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Chatting"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:id="@+id/textStart"
+                android:paddingRight="40dp"
+                android:paddingLeft="20dp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_out"
+                android:id="@+id/iconStart"
+                android:layout_gravity="center_vertical|end"
+                android:paddingHorizontal="10dp"/>
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="500dp"
+        android:visibility="gone"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        android:elevation="100dp"
+        android:elevation="200dp"
         android:id="@+id/bottomsheet"
         android:background="@drawable/bottom_sheet">
         <androidx.cardview.widget.CardView
