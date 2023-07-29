@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.paperdb.Paper
 import okhttp3.Call
 import okhttp3.Callback
@@ -32,15 +35,18 @@ import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.lang.reflect.Type
 
 
 class HomePage : AppCompatActivity() {
 
+    var messageList: List<Message>? = null
+    var messageAdapter: MessageAdapter? = null
+    lateinit var messageRecycleView: RecyclerView
+
     val JSON: MediaType = "application/json; charset=utf-8".toMediaType();
     var client = OkHttpClient()
-    lateinit var messageList : List<Message>
-    lateinit var messageAdapter : MessageAdapter
-    lateinit var messageRecycleView: RecyclerView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,13 +74,14 @@ class HomePage : AppCompatActivity() {
             val gptText = findViewById<TextView>(R.id.gptText)
             val settings_bottomsheet = findViewById<FrameLayout>(R.id.settings_bottomsheet)
             val settingCard = findViewById<CardView>(R.id.settingCard)
-            val closeSettings = findViewById<CardView>(R.id.closeSetiings)
+            val closeSettings = findViewById<CardView>(R.id.closeSettings)
+            val closeSettingsIcon = findViewById<ImageView>(R.id.closeSettingsIcon)
             messageRecycleView = findViewById<RecyclerView>(R.id.messageRecycleView)
             val messageBox = findViewById<EditText>(R.id.messageBox)
             val sendButton = findViewById<CardView>(R.id.sendButton)
 
             messageList = ArrayList<Message>()
-            messageAdapter = MessageAdapter(messageList)
+            messageAdapter = MessageAdapter(messageList as ArrayList<Message>)
             messageRecycleView.adapter = messageAdapter
             val linearLayoutManager = LinearLayoutManager(this)
             linearLayoutManager.stackFromEnd = true
@@ -110,6 +117,7 @@ class HomePage : AppCompatActivity() {
                 iconStart.setImageResource(R.drawable.arrow_out)
                 mainIllustration.setImageResource(R.drawable.flipped_illustration)
                 settings_bottomsheet.setBackgroundResource(R.drawable.settings_bottomsheet)
+                closeSettingsIcon.setImageResource(R.drawable.close)
             } else {
                 //night stuff
                 messageTypeCard.setCardBackgroundColor(Color.parseColor("#6B6B6B"))
@@ -120,6 +128,7 @@ class HomePage : AppCompatActivity() {
                 iconStart.setImageResource(R.drawable.arrow_night)
                 mainIllustration.setImageResource(R.drawable.flipped_night)
                 settings_bottomsheet.setBackgroundResource(R.drawable.settingsbottomsheet_night)
+                closeSettingsIcon.setImageResource(R.drawable.close_night)
             }
 
             val handler = Handler(Looper.getMainLooper())
@@ -159,7 +168,7 @@ class HomePage : AppCompatActivity() {
                 powertext.startAnimation(remove_items)
                 gptText.startAnimation(remove_items)
                 click.startAnimation(remove_items)
-
+                click.isEnabled = false
                 handler.postDelayed({
                     unleashText.startAnimation(fade_out)
                     powertext.startAnimation(fade_out)
@@ -197,8 +206,8 @@ class HomePage : AppCompatActivity() {
                 } else {
                     val messageText = messageBox.text.toString().trim()
                     messageBox.setText("")
+                    addToChat(messageText, "me")
                     try {
-                        addToChat(messageText, "me")
                         callAPI(messageText);
                     }
                     catch (e : Exception){
@@ -212,20 +221,27 @@ class HomePage : AppCompatActivity() {
             Log.d("dax", e.message.toString())
         }
     }
-    fun addToChat(message: String, sentBy : String){
+
+
+    fun addToChat(message: String?, sentBy: String?) {
         runOnUiThread(Runnable {
             kotlin.run {
                 (messageList as ArrayList<Message>).add(Message(message, sentBy))
-                messageAdapter.notifyDataSetChanged()
-                messageRecycleView.smoothScrollToPosition(messageAdapter.itemCount)
+                messageAdapter?.notifyDataSetChanged()
+                messageRecycleView.smoothScrollToPosition(messageAdapter!!.getItemCount());
             }
         })
-    }
 
+    }
     fun addResponse(response: String?) {
 
-        if (response != null) {
-            addToChat(response.toString().trim(), "bot")
+        try {
+            if (response != null) {
+                addToChat(response, "bot")
+            };
+        }
+        catch (e: Exception){
+            Log.d("dax", e.message.toString())
         }
     }
     fun callAPI(question : String){
@@ -246,35 +262,36 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer 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")
+            .header("Authorization", "Bearer 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")
             .post(body)
             .build()
 
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                addResponse("Failed to load response due to "+e.message.toString());
+                Log.d("dax", e.message.toString())
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if(response.isSuccessful){
-                    Log.d("dax", response.body!!.string())
 
-//
                     try {
-                            var jsonObject = JSONObject(response.body.toString())
-                            var jsonArray = jsonObject.getJSONArray("choices")
+                            var jsonObject = JSONObject(response.body?.string())
+                            val jsonArray = jsonObject.getJSONArray("choices")
                             val result = jsonArray.getJSONObject(0).getString("text")
                             Log.d("dax", result.toString())
+                            addResponse(result.toString().trim())
 
                     } catch (e: JSONException) {
                         Log.d("dax", e.message.toString())
                     }
                 }
                 else{
-                    addResponse("Failed to load response due to "+ response.body!!.string())
+                    Log.d("dax", response.body!!.string())
                 }
             }
 
         })
     }
+
+
 }
