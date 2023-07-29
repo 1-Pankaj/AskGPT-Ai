@@ -255,7 +255,7 @@ class HomePage : AppCompatActivity() {
             jsonBody.put("temperature", 0);
         }
         catch (e : Exception){
-            Log.d("dax", e.message.toString())
+            addResponse("Failure to load response due to "+e.message.toString())
         }
 
 
@@ -268,7 +268,7 @@ class HomePage : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                Log.d("dax", e.message.toString())
+                addResponse("Failure to load response due to "+e.message.toString())
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -286,7 +286,7 @@ class HomePage : AppCompatActivity() {
                     }
                 }
                 else{
-                    Log.d("dax", response.body!!.string())
+                    addResponse("Failure to load response, try again!")
                 }
             }
 

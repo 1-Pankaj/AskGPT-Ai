@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 
 
@@ -26,6 +28,7 @@ class MessageAdapter(var messageList: List<Message>) : RecyclerView.Adapter<Mess
             holder.leftChatView.visibility = View.VISIBLE
             holder.leftTextView.text = message.getmessage()
         }
+
     }
 
     override fun getItemCount(): Int {
