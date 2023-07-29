@@ -9,6 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/left_chat"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:layout_marginEnd="80dp"
         android:layout_alignParentStart="true"
         android:background="@drawable/left_chat">
@@ -25,6 +27,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/right_chat"
         android:layout_marginStart="80dp"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:layout_alignParentEnd="true"
         android:background="@drawable/right_chat">
         <TextView
@@ -34,5 +38,67 @@
             android:padding="10dp"
             android:id="@+id/right_chat_text"/>
     </LinearLayout>
-    
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        app:cardCornerRadius="30dp"
+        android:id="@+id/popupCard"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/left_chat"
+        android:layout_marginStart="50dp">
+        <androidx.cardview.widget.CardView
+            android:layout_width="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            android:id="@+id/copyCard"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="20dp"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/copy_content"/>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            android:id="@+id/readingMode"
+            android:layout_gravity="center"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/reading_mode"/>
+        </androidx.cardview.widget.CardView>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            android:id="@+id/closeCard"
+            app:cardBackgroundColor="#0000FFFF"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="20dp"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/close_extra"/>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
+
+
+
 </RelativeLayout>

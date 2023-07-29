@@ -1,21 +1,29 @@
 package com.pankaj.askgpt_ai
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.os.postDelayed
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -80,8 +88,10 @@ class HomePage : AppCompatActivity() {
             val messageBox = findViewById<EditText>(R.id.messageBox)
             val sendButton = findViewById<CardView>(R.id.sendButton)
 
+
+
             messageList = ArrayList<Message>()
-            messageAdapter = MessageAdapter(messageList as ArrayList<Message>)
+            messageAdapter = MessageAdapter(messageList as ArrayList<Message>, applicationContext)
             messageRecycleView.adapter = messageAdapter
             val linearLayoutManager = LinearLayoutManager(this)
             linearLayoutManager.stackFromEnd = true
@@ -89,6 +99,10 @@ class HomePage : AppCompatActivity() {
 
 
             settings_bottomsheet.visibility = View.VISIBLE
+
+
+
+
 
             BottomSheetBehavior.from(bottomsheet).apply {
                 peekHeight = 0
@@ -98,6 +112,8 @@ class HomePage : AppCompatActivity() {
                 peekHeight = 0
                 this.state = BottomSheetBehavior.STATE_HIDDEN
             }
+
+
             window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             Paper.init(applicationContext)
@@ -118,6 +134,7 @@ class HomePage : AppCompatActivity() {
                 mainIllustration.setImageResource(R.drawable.flipped_illustration)
                 settings_bottomsheet.setBackgroundResource(R.drawable.settings_bottomsheet)
                 closeSettingsIcon.setImageResource(R.drawable.close)
+
             } else {
                 //night stuff
                 messageTypeCard.setCardBackgroundColor(Color.parseColor("#6B6B6B"))
@@ -129,6 +146,7 @@ class HomePage : AppCompatActivity() {
                 mainIllustration.setImageResource(R.drawable.flipped_night)
                 settings_bottomsheet.setBackgroundResource(R.drawable.settingsbottomsheet_night)
                 closeSettingsIcon.setImageResource(R.drawable.close_night)
+
             }
 
             val handler = Handler(Looper.getMainLooper())
@@ -200,6 +218,12 @@ class HomePage : AppCompatActivity() {
             }
 
 
+            addToChat("Hi there! welcome to AskGPT-Ai, a fast and accurate " +
+                    "response based application, " + "start by asking a question. " +
+                    "Each time you refresh or reload the application, " +
+                    "a new chat will be created and previous chat data will be wiped for " +
+                    "better end-to-end encryption, AskGPT now!\n\nLong press this message for more options", "bot")
+
             sendButton.setOnClickListener {
                 if (messageBox.text.toString().trim().isEmpty()) {
 
@@ -262,7 +286,7 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer API-KEY")
+            .header("Authorization", "Bearer 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")
             .post(body)
             .build()
 
@@ -292,6 +316,91 @@ class HomePage : AppCompatActivity() {
 
         })
     }
+    class MessageAdapter(var messageList: List<Message>, var context: Context) : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_items, parent, false)
+            return MyViewHolder(view)
+        }
+        fun copyToClipboard(text: CharSequence){
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("label",text)
+            clipboard.setPrimaryClip(clip)
+        }
+        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            val message = messageList[position]
+            val bottom_to_top = AnimationUtils.loadAnimation(context, R.anim.bottom_to_top)
+            val top_to_bottom = AnimationUtils.loadAnimation(context, R.anim.top_to_bottom)
+            bottom_to_top.duration = 400
+            top_to_bottom.duration = 400
+            val handler = Handler(Looper.getMainLooper())
+
+            if (message.getsentby() == message.SENT_BY_ME) {
+                holder.leftChatView.visibility = View.GONE
+                holder.rightChatView.visibility = View.VISIBLE
+                holder.rightTextView.text = message.getmessage()
+
+            } else {
+                holder.rightChatView.visibility = View.GONE
+                holder.leftChatView.visibility = View.VISIBLE
+                holder.leftTextView.text = message.getmessage()
+
+            }
+
+            holder.leftChatView.setOnLongClickListener(){
+//            Toast.makeText(holder.leftChatView.context, messageList.get(position).getmessage().toString(), Toast.LENGTH_SHORT).show()
+
+                holder.popupCard.visibility = View.VISIBLE
+                holder.popupCard.startAnimation(bottom_to_top)
+                true
+            }
+            holder.copyCard.setOnClickListener{
+                copyToClipboard(messageList.get(position).getmessage().toString())
+                holder.popupCard.startAnimation(top_to_bottom)
+                handler.postDelayed({
+                    holder.popupCard.visibility = View.GONE
+                },400)
+                Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+            }
+            holder.closeCard.setOnClickListener{
+                holder.popupCard.startAnimation(top_to_bottom)
+                handler.postDelayed({
+                    holder.popupCard.visibility = View.GONE
+                },400)
+            }
+            holder.readingMode.setOnClickListener{
+                val intent = Intent(context.applicationContext, ReadingMode::class.java)
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("text", messageList.get(position).getmessage().toString())
+                context.applicationContext.startActivity(intent)
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return messageList.size
+        }
+
+        inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            var leftChatView: LinearLayout
+            var rightChatView: LinearLayout
+            var leftTextView: TextView
+            var rightTextView: TextView
+            var popupCard: CardView
+            var copyCard: CardView
+            var readingMode: CardView
+            var closeCard: CardView
+            init {
+                leftChatView = itemView.findViewById<LinearLayout>(R.id.left_chat)
+                rightChatView = itemView.findViewById<LinearLayout>(R.id.right_chat)
+                leftTextView = itemView.findViewById<TextView>(R.id.left_chat_text)
+                rightTextView = itemView.findViewById<TextView>(R.id.right_chat_text)
+                popupCard = itemView.findViewById<CardView>(R.id.popupCard)
+                copyCard = itemView.findViewById<CardView>(R.id.copyCard)
+                readingMode = itemView.findViewById<CardView>(R.id.readingMode)
+                closeCard = itemView.findViewById<CardView>(R.id.closeCard)
+
+            }
+        }
+    }
 
 }
