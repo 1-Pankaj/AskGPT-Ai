@@ -3,5 +3,5 @@
     android:fillAfter="true">
     <translate
         android:fromYDelta="0"
-        android:toYDelta="250"/>
+        android:toYDelta="300"/>
 </set>

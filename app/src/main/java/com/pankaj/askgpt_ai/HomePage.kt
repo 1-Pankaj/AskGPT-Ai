@@ -81,6 +81,7 @@ class HomePage : AppCompatActivity() {
         val remove_items = AnimationUtils.loadAnimation(this, R.anim.remove_items)
         val main_illustration = AnimationUtils.loadAnimation(this, R.anim.main_illustration)
         val fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        val fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in)
 
         right_to_left.duration = 2000
         text_animation.duration = 2000
@@ -89,7 +90,7 @@ class HomePage : AppCompatActivity() {
         text_animation4.duration = 2000
         remove_items.duration = 1500
         main_illustration.duration = 1500
-        fade_out.duration = 200
+        fade_out.duration = 500
 
         mainIllustration.startAnimation(right_to_left)
         unleashText.startAnimation(text_animation2)
@@ -99,7 +100,7 @@ class HomePage : AppCompatActivity() {
 
         click.setOnClickListener{
             BottomSheetBehavior.from(bottomsheet).apply {
-                peekHeight = 120
+                peekHeight = 150
                 this.state = BottomSheetBehavior.STATE_EXPANDED
             }
             mainIllustration.startAnimation(main_illustration)
