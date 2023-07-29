@@ -85,8 +85,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:visibility="gone"
+        android:layout_height="match_parent"
+        android:visibility="visible"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         android:elevation="200dp"
         android:id="@+id/bottomsheet"
@@ -110,8 +110,7 @@
             app:cardBackgroundColor="#0000FFFF"
             app:cardElevation="0dp"
             app:strokeColor="#ADADAD"
-            android:id="@+id/settingCard"
-            >
+            android:id="@+id/settingCard">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,49 +118,102 @@
                 android:id="@+id/settingIcon"
                 android:layout_gravity="center"/>
         </com.google.android.material.card.MaterialCardView>
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="55dp"
-            android:padding="15dp"
-            android:layout_marginBottom="90dp"/>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="30dp"
-            android:layout_marginHorizontal="25dp"
-            app:cardElevation="0dp"
-            android:id="@+id/messageTypeCard"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="30dp"
-            app:cardBackgroundColor="#EFEDED">
-            <EditText
-                android:inputType="textLongMessage"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:background="#0000FFFF"
-                android:hint="Type your message here"
-                android:textSize="14sp"
-                android:padding="20dp"/>
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="55dp"
+                android:padding="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/messageRecycleView"
+                app:layout_constraintVertical_bias="0"
+                android:layout_marginBottom="90dp"/>
             <androidx.cardview.widget.CardView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:cardCornerRadius="30dp"
-                android:layout_gravity="center_vertical|end"
-                app:cardBackgroundColor="#1D1E35"
+                app:layout_constraintTop_toBottomOf="@id/messageRecycleView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginHorizontal="25dp"
                 app:cardElevation="0dp"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginEnd="5dp">
-                <ImageView
-                    android:layout_width="wrap_content"
+                app:layout_constraintVertical_bias="1"
+                android:id="@+id/messageTypeCard"
+                android:layout_marginBottom="30dp"
+                app:cardBackgroundColor="#EFEDED">
+                <EditText
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/send"
-                    app:tint="@color/white"
-                    android:layout_gravity="center"/>
-            </androidx.cardview.widget.CardView>
+                    android:background="#0000FFFF"
+                    android:hint="Type your message here"
+                    android:textSize="14sp"
+                    android:id="@+id/messageBox"
+                    android:maxHeight="230dp"
+                    android:padding="20dp"/>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:cardCornerRadius="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    app:cardBackgroundColor="#1D1E35"
+                    app:cardElevation="0dp"
+                    android:id="@+id/sendButton"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:layout_marginEnd="5dp">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/send"
+                        app:tint="@color/white"
+                        android:layout_gravity="center"/>
+                </androidx.cardview.widget.CardView>
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:background="@drawable/settings_bottomsheet"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        android:elevation="200dp"
+        android:visibility="gone"
+        android:id="@+id/settings_bottomsheet">
+        <androidx.cardview.widget.CardView
+            android:layout_width="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_height="5dp"
+            app:cardBackgroundColor="#B1B1B1"
+            app:cardCornerRadius="10dp"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            android:id="@+id/closeSetiings"
+            app:strokeWidth="1dp"
+            app:strokeColor="#ADADAD"
+            app:cardBackgroundColor="#0000FFFF"
+            android:layout_gravity="center_horizontal|end"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="35dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/close"
+                android:layout_gravity="center" />
+        </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
