@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.postDelayed
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -63,11 +64,6 @@ class HomePage : AppCompatActivity() {
 
 
         try {
-
-
-
-
-
 
             val bottomsheet = findViewById<FrameLayout>(R.id.bottomsheet)
             val click = findViewById<CardView>(R.id.click)
@@ -161,13 +157,13 @@ class HomePage : AppCompatActivity() {
             val fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out)
             val fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in)
 
-            right_to_left.duration = 2000
-            text_animation.duration = 2000
-            text_animation2.duration = 2000
-            text_animation3.duration = 2000
-            text_animation4.duration = 2000
-            remove_items.duration = 1500
-            main_illustration.duration = 1500
+            right_to_left.duration = 1200
+            text_animation.duration = 1200
+            text_animation2.duration = 1200
+            text_animation3.duration = 1200
+            text_animation4.duration = 1200
+            remove_items.duration = 1200
+            main_illustration.duration = 1200
             fade_out.duration = 500
 
             mainIllustration.startAnimation(right_to_left)
@@ -192,7 +188,7 @@ class HomePage : AppCompatActivity() {
                     powertext.startAnimation(fade_out)
                     gptText.startAnimation(fade_out)
                     click.startAnimation(fade_out)
-                }, 1500)
+                }, 1200)
             }
 
             settingCard.setOnClickListener {
@@ -286,7 +282,7 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer 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")
+            .header("Authorization", "Bearer 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")
             .post(body)
             .build()
 
@@ -317,7 +313,7 @@ class HomePage : AppCompatActivity() {
         })
     }
     class MessageAdapter(var messageList: List<Message>, var context: Context) : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
-
+        var lastPosition = messageList.size
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_items, parent, false)
             return MyViewHolder(view)
@@ -326,6 +322,16 @@ class HomePage : AppCompatActivity() {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("label",text)
             clipboard.setPrimaryClip(clip)
+        }
+        fun setAnimation(viewToAnimate : View,position: Int)
+        {
+            if (position > lastPosition)
+            {
+                val animation = AnimationUtils.loadAnimation(context, R.anim.bottom_to_top);
+                animation.duration = 400
+                viewToAnimate.startAnimation(animation);
+                lastPosition = position;
+            }
         }
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val message = messageList[position]
@@ -339,16 +345,15 @@ class HomePage : AppCompatActivity() {
                 holder.leftChatView.visibility = View.GONE
                 holder.rightChatView.visibility = View.VISIBLE
                 holder.rightTextView.text = message.getmessage()
-
+                setAnimation(holder.rightChatView, position)
             } else {
                 holder.rightChatView.visibility = View.GONE
                 holder.leftChatView.visibility = View.VISIBLE
                 holder.leftTextView.text = message.getmessage()
-
+                setAnimation(holder.leftChatView, position)
             }
 
             holder.leftChatView.setOnLongClickListener(){
-//            Toast.makeText(holder.leftChatView.context, messageList.get(position).getmessage().toString(), Toast.LENGTH_SHORT).show()
 
                 holder.popupCard.visibility = View.VISIBLE
                 holder.popupCard.startAnimation(bottom_to_top)

@@ -1,11 +1,15 @@
 package com.pankaj.askgpt_ai
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.Interpolator
@@ -130,7 +134,15 @@ class MainActivity : AppCompatActivity() {
         val putawaygarbage = AnimationUtils.loadAnimation(this, R.anim.putawaygarbage)
         val cardloading_anim = AnimationUtils.loadAnimation(this, R.anim.cardloading_anim)
         val illustrationanim_three = AnimationUtils.loadAnimation(this, R.anim.illustrationanim_three)
+        val bottom_to_top = AnimationUtils.loadAnimation(this, R.anim.bottom_to_top)
+        val top_to_bottom = AnimationUtils.loadAnimation(this, R.anim.top_to_bottom)
+        val cardloadanim_up = AnimationUtils.loadAnimation(this, R.anim.cardloadanim_up)
 
+        bottom_to_top.duration = 600
+        top_to_bottom.duration = 600
+
+
+        cardloadanim_up.duration = 400
         cardloading_anim.duration = 400
         putawaygarbage.duration = 0
         edittext2_anim.duration = 1000
@@ -145,22 +157,39 @@ class MainActivity : AppCompatActivity() {
         illustration_anim.duration = 600
 
 
-        val cogwheel = findViewById<CardView>(R.id.cogwheel)
+
         val cogwheelanim1 = AnimationUtils.loadAnimation(this, R.anim.cogwheelanim1)
         cogwheelanim1.duration = 1500
         val cogwheelanim2 = AnimationUtils.loadAnimation(this, R.anim.cogwheelanim2)
         cogwheelanim2.duration = 1500
         cardSplash.visibility = CardView.GONE
+        val internetCard = findViewById<CardView>(R.id.internetCard)
+        val retry_internet = findViewById<CardView>(R.id.retry_internet)
+        val cancel_internet = findViewById<CardView>(R.id.cancel_internet)
+
+        retry_internet.setOnClickListener{
+            if(isNetworkAvailable()){
+                internetCard.startAnimation(top_to_bottom)
+                internetCard.visibility = View.GONE
+                val intent= Intent(applicationContext, MainActivity::class.java)
+                finishAffinity()
+                startActivity(intent)
+            }
+            else{
+                Toast.makeText(applicationContext, "No connection!", Toast.LENGTH_SHORT).show()
+            }
+        }
+        cancel_internet.setOnClickListener{
+            finishAffinity()
+        }
+
+        internetCard.visibility = View.GONE
 
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             cardSplash.visibility = CardView.VISIBLE
-            cogwheel.startAnimation(cogwheelanim1)
         }, 100)
 
-        handler.postDelayed({
-            cogwheel.startAnimation(cogwheelanim2)
-        }, 2500)
         handler.postDelayed({
             val emailText = Paper.book().read(DatabaseModule().emailKey, "emailKey")
             val passText = Paper.book().read(DatabaseModule().passKey, "passKey")
@@ -174,28 +203,42 @@ class MainActivity : AppCompatActivity() {
                     cardSplash.isEnabled = false
                 }
                 else{
-                    maAuth.signInWithEmailAndPassword(emailText, passText).addOnCompleteListener{
-                        if(it.isSuccessful){
-                            val intent = Intent(applicationContext, HomePage::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
-                        else{
-                            cardAi.startAnimation(fade_out)
-                            cardSplash.startAnimation(fade_out)
-                            cardSplash.setBackgroundColor(Color.parseColor("#0000FFFF"))
-                            cardAi.visibility = CardView.GONE
-                            cardSplash.visibility = CardView.GONE
-                            cardSplash.isEnabled = false
-                        }
+                    if(isNetworkAvailable()) {
+
+
+                        maAuth.signInWithEmailAndPassword(emailText, passText)
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    val intent = Intent(applicationContext, HomePage::class.java)
+                                    startActivity(intent)
+                                    handler.postDelayed({
+                                        cardAi.startAnimation(putawaygarbage)
+
+                                    }, 2200)
+                                    finish()
+                                } else {
+                                    cardAi.startAnimation(fade_out)
+                                    cardSplash.startAnimation(fade_out)
+                                    cardSplash.setBackgroundColor(Color.parseColor("#0000FFFF"))
+                                    cardAi.visibility = CardView.GONE
+                                    cardSplash.visibility = CardView.GONE
+                                    cardSplash.isEnabled = false
+                                    cardAi.startAnimation(putawaygarbage)
+
+                                    cardSplash.startAnimation(putawaygarbage)
+                                    cardSplash.visibility = View.GONE
+                                }
+                            }
+                    }
+                    else{
+                        internetCard.visibility = View.VISIBLE
+                        internetCard.startAnimation(bottom_to_top)
                     }
                 }
             }
-        }, 3100)
+        }, 2000)
 
-        handler.postDelayed({
-            cardAi.startAnimation(putawaygarbage)
-        }, 3500)
+
 
 
         buttonStart.setOnClickListener(){
@@ -265,12 +308,16 @@ class MainActivity : AppCompatActivity() {
 
         buttonContinue.setOnClickListener(){
             val emailTextData = emailEditText.text.toString()
+            cardLoad.visibility = View.VISIBLE
+            cardLoad.startAnimation(cardloadanim_up)
             if(emailTextData.isEmpty()){
 
             }else{
                 try {
                     maAuth.fetchSignInMethodsForEmail(emailTextData).addOnCompleteListener {
 
+                        cardLoad.visibility = View.GONE
+                        cardLoad.startAnimation(cardloading_anim)
                         if (it.isSuccessful) {
                             if (it.result.signInMethods!!.isEmpty()) {
 
@@ -330,21 +377,36 @@ class MainActivity : AppCompatActivity() {
         loginbtn.setOnClickListener(){
             val passTextData = passText.text.toString()
             val emailTextData = emailText.text.toString()
-            if(passTextData.isEmpty() && emailTextData.isEmpty()){
+            cardLoad.visibility = View.VISIBLE
+            cardLoad.startAnimation(cardloadanim_up)
 
+            if(passTextData.isEmpty() && emailTextData.isEmpty()){
+                cardLoad.visibility = View.GONE
+                cardLoad.startAnimation(cardloading_anim)
             }
             else{
                 if(passTextData.length < 6){
                     passText.setError("Atleast 6 Characters!")
+                    cardLoad.visibility = View.GONE
+                    cardLoad.startAnimation(cardloading_anim)
                 }else{
+                    cardLoad.visibility = View.GONE
+                    cardLoad.startAnimation(cardloading_anim)
                     maAuth.signInWithEmailAndPassword(emailTextData, passTextData).addOnCompleteListener{
                         if(it.isSuccessful){
+
                             Paper.book().write(DatabaseModule().emailKey, emailTextData)
                             Paper.book().write(DatabaseModule().passKey, passTextData)
-
+                            cardLoad.visibility = CardView.GONE
+                            cardLoad.startAnimation(cardloading_anim)
                             val intent = Intent(applicationContext, HomePage::class.java)
                             startActivity(intent)
                             finish()
+                        }
+                        else{
+                            Toast.makeText(applicationContext, "Error logging in, try again!", Toast.LENGTH_SHORT).show()
+                            cardLoad.visibility = View.GONE
+                            cardLoad.startAnimation(cardloading_anim)
                         }
                     }
                 }
@@ -352,9 +414,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSignup.setOnClickListener(){
-            cardloading_anim.setInterpolator(ReverseInterpolator())
-            cardLoad.startAnimation(cardloading_anim)
+
+
             cardLoad.visibility = CardView.VISIBLE
+            cardLoad.startAnimation(cardloadanim_up)
             val firstName = firstnameEditText.text.toString()
             val lastName = lastnameEditText.text.toString()
             val passwordText = passwordEditText.text.toString()
@@ -362,13 +425,12 @@ class MainActivity : AppCompatActivity() {
 
             if(firstName.isEmpty() || lastName.isEmpty() || passwordText.isEmpty() || confirmPass.isEmpty()){
                 cardLoad.visibility = CardView.GONE
-                cardloading_anim.setInterpolator(ReverseInterpolator())
                 cardLoad.startAnimation(cardloading_anim)
+
             }
             else if(!passwordText.equals(confirmPass)){
                 confirmpassEditText.setError("Password doesn't match!")
                 cardLoad.visibility = CardView.GONE
-                cardloading_anim.setInterpolator(ReverseInterpolator())
                 cardLoad.startAnimation(cardloading_anim)
             }
             else{
@@ -386,7 +448,6 @@ class MainActivity : AppCompatActivity() {
                                     Paper.book().write(DatabaseModule().emailKey, emailData)
                                     Paper.book().write(DatabaseModule().passKey, passwordText)
                                     cardLoad.visibility = CardView.GONE
-                                    cardloading_anim.setInterpolator(ReverseInterpolator())
                                     cardLoad.startAnimation(cardloading_anim)
                                     val intent = Intent(applicationContext, HomePage::class.java)
                                     startActivity(intent)
@@ -395,8 +456,8 @@ class MainActivity : AppCompatActivity() {
                                 else{
                                     Toast.makeText(applicationContext, "Error signing up, try again!", Toast.LENGTH_SHORT).show()
                                     cardLoad.visibility = CardView.GONE
-                                    cardloading_anim.setInterpolator(ReverseInterpolator())
                                     cardLoad.startAnimation(cardloading_anim)
+
                                 }
                             }
 
@@ -405,13 +466,22 @@ class MainActivity : AppCompatActivity() {
                 catch (e: Exception){
                     Log.d("dax", e.message.toString())
                     cardLoad.visibility = CardView.GONE
-                    cardloading_anim.setInterpolator(ReverseInterpolator())
                     cardLoad.startAnimation(cardloading_anim)
                 }
+
             }
         }
 
+
     }
+
+
+    fun isNetworkAvailable(): Boolean {
+        val connectivityManager =  getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
+        val activeNetworkInfo = connectivityManager.getActiveNetworkInfo()
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+    //here
     class ReverseInterpolator : Interpolator {
         override fun getInterpolation(paramFloat: Float): Float {
             return Math.abs(paramFloat - 1f)

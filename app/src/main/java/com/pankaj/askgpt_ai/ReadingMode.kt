@@ -1,14 +1,16 @@
 package com.pankaj.askgpt_ai
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+
 
 class ReadingMode : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,6 +18,9 @@ class ReadingMode : AppCompatActivity() {
         setContentView(R.layout.activity_reading_mode)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        val displayMetrics: DisplayMetrics = resources.displayMetrics
+        val dpHeight = displayMetrics.heightPixels / displayMetrics.density
+        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
 
         val readingModeCard = findViewById<FrameLayout>(R.id.readingModeCard)
         val readingModeText = findViewById<TextView>(R.id.readingModeText)
@@ -23,27 +28,30 @@ class ReadingMode : AppCompatActivity() {
         val readingModeCloseIcon = findViewById<ImageView>(R.id.closeReadingModeIcon)
 
         readingModeText.text = intent.extras?.getString("text")
+
         BottomSheetBehavior.from(readingModeCard).apply {
-            peekHeight = 500
+            peekHeight = (dpHeight / 2).toInt()
             this.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         readingModeCloseCard.setOnClickListener{
-            BottomSheetBehavior.from(readingModeCard).apply {
-                peekHeight = 0
-                this.state = BottomSheetBehavior.STATE_COLLAPSED
-                this.state = BottomSheetBehavior.STATE_HIDDEN
-            }
             finish()
         }
 
         if(resources.getString(R.string.mode) == "Day"){
-            readingModeCard.setBackgroundResource(R.drawable.settings_bottomsheet)
+            readingModeCard.setBackgroundResource(R.drawable.readingmode_bottomsheet)
             readingModeCloseIcon.setImageResource(R.drawable.close)
         }
         else{
             readingModeCard.setBackgroundResource(R.drawable.readingmode_night)
             readingModeCloseIcon.setImageResource(R.drawable.close_night)
         }
+    }
+
+    override fun onBackPressed() {
+        Toast.makeText(applicationContext, "Exiting reading mode", Toast.LENGTH_SHORT).show()
+        finish()
+
+        super.onBackPressed()
     }
 }
