@@ -445,6 +445,8 @@ class MainActivity : AppCompatActivity() {
                                     dbRef.child("Users").child(user.uid).child("FirstName").setValue(firstName)
                                     dbRef.child("Users").child(user.uid).child("LastName").setValue(lastName)
                                     dbRef.child("Users").child(user.uid).child("email").setValue(emailData)
+                                    dbRef.child("Users").child(user.uid).child("verification").setValue("unverified")
+                                    dbRef.child("Users").child(user.uid).child("profile").setValue("")
                                     Paper.book().write(DatabaseModule().emailKey, emailData)
                                     Paper.book().write(DatabaseModule().passKey, passwordText)
                                     cardLoad.visibility = CardView.GONE

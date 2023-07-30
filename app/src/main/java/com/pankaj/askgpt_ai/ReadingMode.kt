@@ -156,7 +156,7 @@ class ReadingMode : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_SEND)
 
         intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here")
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Ai Response")
 
         intent.putExtra(Intent.EXTRA_TEXT, titlee)
         startActivity(Intent.createChooser(intent, "Share Via"))

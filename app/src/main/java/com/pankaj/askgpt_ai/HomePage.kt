@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.location.GnssAntennaInfo.Listener
 import android.media.Image
 import android.os.Bundle
 import android.os.Handler
@@ -28,7 +29,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import io.paperdb.Paper
 import okhttp3.Call
@@ -237,6 +241,50 @@ class HomePage : AppCompatActivity() {
                 "bot",
                 false
             )
+
+
+            val cardShareToFriends = findViewById<CardView>(R.id.cardShareToFriends)
+            val nameText = findViewById<TextView>(R.id.nameText)
+            val emailText = findViewById<TextView>(R.id.emailText)
+            val profileImage = findViewById<ImageView>(R.id.profileImage)
+
+            val uid = maAuth.currentUser?.uid
+
+            dbRef.addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    nameText.setText(snapshot.child("Users").child(uid.toString()).child("FirstName").value.toString()
+                            +" "+ snapshot.child("Users").child(uid.toString()).child("LastName").value.toString() )
+
+
+                    emailText.setText(snapshot.child("Users").child(uid.toString()).child("email").value.toString())
+                    val imgUrl = snapshot.child("Users").child(uid.toString()).child("profile").value.toString()
+                    if(imgUrl == null || imgUrl.isEmpty() == true){
+
+                    }
+                    else{
+                        Picasso.get().load(imgUrl).into(profileImage)
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+
+            cardShareToFriends.setOnClickListener{
+                //https://github.com/1-Pankaj/AskGPT-Ai
+
+                val intent = Intent(Intent.ACTION_SEND)
+
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Ai Response")
+
+                intent.putExtra(Intent.EXTRA_TEXT, "Hi there! Checkout this awesome" +
+                        " Ai response application i'm using\n\nhttps://github.com/1-Pankaj/AskGPT-Ai")
+                startActivity(Intent.createChooser(intent, "Share Via"))
+            }
 
             sendButton.setOnClickListener {
                 if (messageBox.text.toString().trim().isEmpty()) {
