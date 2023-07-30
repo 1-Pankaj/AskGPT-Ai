@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -17,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.squareup.picasso.Picasso
 import yuku.ambilwarna.AmbilWarnaDialog
 
 
@@ -33,7 +35,9 @@ class ReadingMode : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         dbRef = FirebaseDatabase.getInstance().reference
 
-
+        var data: String = ""
+        var mode = "text"
+        var text:Float = 13F
 
         val displayMetrics: DisplayMetrics = resources.displayMetrics
         val dpHeight = displayMetrics.heightPixels / displayMetrics.density
@@ -46,9 +50,24 @@ class ReadingMode : AppCompatActivity() {
         val colorPicker = findViewById<CardView>(R.id.colorPicker)
         val shareContent = findViewById<CardView>(R.id.shareContent)
         val copyContent = findViewById<CardView>(R.id.copyContent)
+        val readingModeImage = findViewById<ImageView>(R.id.readingModeImage)
+        val textSize = findViewById<CardView>(R.id.textSize)
+        val textDecrease = findViewById<CardView>(R.id.textDecrease)
+        textDecrease.visibility = View.GONE
 
-        readingModeText.text = intent.extras?.getString("text")
+        readingModeText.textSize = text
 
+        mode = intent.extras?.getString("mode").toString()
+        readingModeImage.visibility = View.GONE
+        data = intent.extras?.getString("text").toString()
+        readingModeText.text = data
+
+        if(mode == "image"){
+            readingModeImage.visibility = View.VISIBLE
+            readingModeText.visibility = View.GONE
+            Picasso.get().load(data).into(readingModeImage)
+            colorPicker.visibility = View.GONE
+        }
 
         BottomSheetBehavior.from(readingModeCard).apply {
             peekHeight = (dpHeight / 2).toInt()
@@ -75,8 +94,34 @@ class ReadingMode : AppCompatActivity() {
             shareText(readingModeText.text.toString())
         }
         copyContent.setOnClickListener{
-            copyToClipboard(readingModeText.text.toString())
+            copyToClipboard(data)
             Toast.makeText(applicationContext, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+        }
+        if(mode == "image"){
+            textSize.visibility = View.GONE
+        }
+        textSize.setOnClickListener{
+            if(text == 24F){
+                textSize.visibility = View.GONE
+            }
+            else{
+                text = text + 1
+                readingModeText.textSize = text
+                textDecrease.visibility = View.VISIBLE
+            }
+        }
+
+        textDecrease.setOnClickListener{
+
+            if(text == 10F){
+                textDecrease.visibility = View.GONE
+            }
+            else{
+                text = text - 1
+                readingModeText.textSize = text
+                textSize.visibility = View.VISIBLE
+            }
+
         }
     }
 

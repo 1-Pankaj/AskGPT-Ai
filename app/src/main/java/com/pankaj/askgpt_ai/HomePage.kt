@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.media.Image
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,15 +24,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.os.postDelayed
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.squareup.picasso.Picasso
 import io.paperdb.Paper
 import okhttp3.Call
 import okhttp3.Callback
@@ -44,7 +42,6 @@ import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.lang.reflect.Type
 
 
 class HomePage : AppCompatActivity() {
@@ -52,6 +49,9 @@ class HomePage : AppCompatActivity() {
     var messageList: List<Message>? = null
     var messageAdapter: MessageAdapter? = null
     lateinit var messageRecycleView: RecyclerView
+    lateinit var modeChangeCard: CardView
+    lateinit var modeImage: ImageView
+    lateinit var mode: String
 
     val JSON: MediaType = "application/json; charset=utf-8".toMediaType();
     var client = OkHttpClient()
@@ -83,8 +83,22 @@ class HomePage : AppCompatActivity() {
             messageRecycleView = findViewById<RecyclerView>(R.id.messageRecycleView)
             val messageBox = findViewById<EditText>(R.id.messageBox)
             val sendButton = findViewById<CardView>(R.id.sendButton)
+            modeChangeCard = findViewById<CardView>(R.id.modeChangeCard)
+            modeImage = findViewById<ImageView>(R.id.mode)
+            mode = "text"
 
-
+            modeChangeCard.setOnClickListener {
+                if (mode == "text") {
+                    modeImage.setImageResource(R.drawable.image)
+                    mode = "image"
+                    Toast.makeText(applicationContext, "Image Generation mode", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    modeImage.setImageResource(R.drawable.text)
+                    Toast.makeText(applicationContext, "Chat mode", Toast.LENGTH_SHORT).show()
+                    mode = "text"
+                }
+            }
 
             messageList = ArrayList<Message>()
             messageAdapter = MessageAdapter(messageList as ArrayList<Message>, applicationContext)
@@ -214,11 +228,15 @@ class HomePage : AppCompatActivity() {
             }
 
 
-            addToChat("Hi there! welcome to AskGPT-Ai, a fast and accurate " +
-                    "response based application, " + "start by asking a question. " +
-                    "Each time you refresh or reload the application, " +
-                    "a new chat will be created and previous chat data will be wiped for " +
-                    "better end-to-end encryption, AskGPT now!\n\nLong press this message for more options", "bot")
+            addToChat(
+                "Hi there! welcome to AskGPT-Ai, a fast and accurate " +
+                        "response based application, " + "start by asking a question. " +
+                        "Each time you refresh or reload the application, " +
+                        "a new chat will be created and previous chat data will be wiped for " +
+                        "better end-to-end encryption, AskGPT now!\n\nLong press this message for more options",
+                "bot",
+                false
+            )
 
             sendButton.setOnClickListener {
                 if (messageBox.text.toString().trim().isEmpty()) {
@@ -226,44 +244,88 @@ class HomePage : AppCompatActivity() {
                 } else {
                     val messageText = messageBox.text.toString().trim()
                     messageBox.setText("")
-                    addToChat(messageText, "me")
+                    addToChat(messageText, "me", false)
                     try {
-                        callAPI(messageText);
-                    }
-                    catch (e : Exception){
+                        if (mode == "image") {
+                            CallImageAPI(messageText)
+                        } else {
+                            callAPI(messageText);
+                        }
+
+                    } catch (e: Exception) {
                         Log.d("dax", e.message.toString())
                     }
                 }
 
             }
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             Log.d("dax", e.message.toString())
         }
     }
 
 
-    fun addToChat(message: String?, sentBy: String?) {
+    fun addToChat(message: String?, sentBy: String?, image: Boolean?) {
         runOnUiThread(Runnable {
             kotlin.run {
-                (messageList as ArrayList<Message>).add(Message(message, sentBy))
+                (messageList as ArrayList<Message>).add(Message(message, sentBy, image))
                 messageAdapter?.notifyDataSetChanged()
                 messageRecycleView.smoothScrollToPosition(messageAdapter!!.getItemCount());
             }
         })
 
     }
+
     fun addResponse(response: String?) {
 
         try {
             if (response != null) {
-                addToChat(response, "bot")
+                addToChat(response, "bot", false)
             };
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Log.d("dax", e.message.toString())
         }
     }
+
+
+    fun CallImageAPI(text: String?) {
+        //API CALL
+        val jsonBody = JSONObject()
+        try {
+            jsonBody.put("prompt", text)
+            jsonBody.put("size", "256x256")
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        val requestBody = RequestBody.create(JSON, jsonBody.toString())
+        val request: Request = Request.Builder()
+            .url("https://api.openai.com/v1/images/generations")
+            .header("Authorization", "Bearer API_KEY") //API KEYS GO HERE
+            .post(requestBody)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                addResponse("Failure to load response")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val jsonObject = JSONObject(response.body?.string())
+                val imageUrl = jsonObject.getJSONArray("data").getJSONObject(0).getString("url")
+//
+                addToChat(imageUrl, "bot", true)
+            }
+
+        })
+    }
+
+
+
+
+
+
+
+
+
+
     fun callAPI(question : String){
         //okhttp
         val jsonBody = JSONObject()
@@ -282,7 +344,7 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer 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")
+            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
             .post(body)
             .build()
 
@@ -346,7 +408,16 @@ class HomePage : AppCompatActivity() {
                 holder.rightChatView.visibility = View.VISIBLE
                 holder.rightTextView.text = message.getmessage()
                 setAnimation(holder.rightChatView, position)
-            } else {
+            }
+            else if(message.getimage() == true){
+                holder.leftChatView.visibility = View.VISIBLE
+                holder.rightChatView.visibility = View.GONE
+                holder.leftTextView.visibility = View.GONE
+                holder.imageCard.visibility = View.VISIBLE
+                Picasso.get().load(message.getmessage()).into(holder.imageView)
+                setAnimation(holder.leftChatView, position)
+            }
+            else {
                 holder.rightChatView.visibility = View.GONE
                 holder.leftChatView.visibility = View.VISIBLE
                 holder.leftTextView.text = message.getmessage()
@@ -376,8 +447,17 @@ class HomePage : AppCompatActivity() {
             holder.readingMode.setOnClickListener{
                 val intent = Intent(context.applicationContext, ReadingMode::class.java)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("text", messageList.get(position).getmessage().toString())
-                context.applicationContext.startActivity(intent)
+                if(messageList.get(position).getimage() == true){
+                    intent.putExtra("mode", "image")
+                    intent.putExtra("text", messageList.get(position).getmessage().toString())
+                    context.applicationContext.startActivity(intent)
+                }
+                else{
+                    intent.putExtra("mode", "text")
+                    intent.putExtra("text", messageList.get(position).getmessage().toString())
+                    context.applicationContext.startActivity(intent)
+                }
+
             }
         }
 
@@ -394,6 +474,8 @@ class HomePage : AppCompatActivity() {
             var copyCard: CardView
             var readingMode: CardView
             var closeCard: CardView
+            var imageCard: CardView
+            var imageView: ImageView
             init {
                 leftChatView = itemView.findViewById<LinearLayout>(R.id.left_chat)
                 rightChatView = itemView.findViewById<LinearLayout>(R.id.right_chat)
@@ -403,6 +485,8 @@ class HomePage : AppCompatActivity() {
                 copyCard = itemView.findViewById<CardView>(R.id.copyCard)
                 readingMode = itemView.findViewById<CardView>(R.id.readingMode)
                 closeCard = itemView.findViewById<CardView>(R.id.closeCard)
+                imageCard = itemView.findViewById<CardView>(R.id.imageCard)
+                imageView = itemView.findViewById<ImageView>(R.id.imageView)
 
             }
         }

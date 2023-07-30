@@ -60,6 +60,15 @@
             android:textSize="25sp"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="40dp"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="60dp"
+            android:scaleType="center"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:id="@+id/readingModeImage"
+            />
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -71,16 +80,7 @@
                 android:textIsSelectable="true"
                 android:id="@+id/readingModeText"
                 android:layout_gravity="center_horizontal|top"
-                android:text="Connect easily with your family and friends over countries
-Connect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countries
-Connect easily with your family and friends over countries
-Connect easily with your family and friends over countriesConnect easily with your family and friends over countries
-Connect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countries
-Connect easily with your family and friends over countries
-Connect easily with your family and friends over countriesConnect easily with your family and friends over countries
-Connect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countriesConnect easily with your family and friends over countries
-Connect easily with your family and friends over countries
-Connect easily with your family and friends over countries"
+                android:text=""
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingHorizontal="50dp"
@@ -154,6 +154,24 @@ Connect easily with your family and friends over countries"
                     android:src="@drawable/text_size"
                     android:layout_gravity="center"/>
             </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:cardCornerRadius="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    app:cardElevation="0dp"
+                    android:visibility="gone"
+                    android:id="@+id/textDecrease"
+                    app:cardBackgroundColor="#0000FFFF"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/text_decrease"
+                        android:layout_gravity="center"/>
+                </androidx.cardview.widget.CardView>
                 <androidx.cardview.widget.CardView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
