@@ -28,6 +28,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -250,28 +251,7 @@ class HomePage : AppCompatActivity() {
 
             val uid = maAuth.currentUser?.uid
 
-            dbRef.addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    nameText.setText(snapshot.child("Users").child(uid.toString()).child("FirstName").value.toString()
-                            +" "+ snapshot.child("Users").child(uid.toString()).child("LastName").value.toString() )
 
-
-                    emailText.setText(snapshot.child("Users").child(uid.toString()).child("email").value.toString())
-                    val imgUrl = snapshot.child("Users").child(uid.toString()).child("profile").value.toString()
-                    if(imgUrl == null || imgUrl.isEmpty() == true){
-
-                    }
-                    else{
-                        Picasso.get().load(imgUrl).into(profileImage)
-                    }
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-
-            })
 
             val infoCard = findViewById<FrameLayout>(R.id.infoCard)
             val infoCardIcon = findViewById<ImageView>(R.id.infoCardIcon)
@@ -285,11 +265,7 @@ class HomePage : AppCompatActivity() {
 
             val appearance = findViewById<CardView>(R.id.appearance)
 
-            if(resources.getString(R.string.mode) == "Day"){
-                infoCard.setBackgroundResource(R.drawable.settings_bottomsheet)
-            }else{
-                infoCard.setBackgroundResource((R.drawable.settingsbottomsheet_night))
-            }
+
             val privacyCard = findViewById<CardView>(R.id.privacyCard)
 
             privacyCard.setOnClickListener{
@@ -310,9 +286,107 @@ class HomePage : AppCompatActivity() {
 
             val profileInfoCard = findViewById<CardView>(R.id.profileInfoCard)
 
-            profileInfoCard.setOnClickListener{
+            val profileInfoSheet = findViewById<FrameLayout>(R.id.profileInfoSheet)
+            val closeProfileInfoSheet = findViewById<CardView>(R.id.closeProfileInfoSheet)
+            val profileInfoImg = findViewById<ImageView>(R.id.profileImg)
+            val firstNameEditText = findViewById<EditText>(R.id.firstNameEditText)
+            val lastNameEditText = findViewById<EditText>(R.id.lastNameEditText)
+            val emailEditText = findViewById<EditText>(R.id.emailEditText)
+            val saveButton = findViewById<MaterialButton>(R.id.saveButton)
+            val logoutButton = findViewById<MaterialButton>(R.id.logoutButton)
 
+            if(resources.getString(R.string.mode) == "Day"){
+                infoCard.setBackgroundResource(R.drawable.settings_bottomsheet)
+                profileInfoSheet.setBackgroundResource(R.drawable.settings_bottomsheet)
+                firstNameEditText.setBackgroundResource(R.drawable.edittext)
+                lastNameEditText.setBackgroundResource(R.drawable.edittext)
+                emailEditText.setBackgroundResource(R.drawable.edittext)
+            }else{
+                infoCard.setBackgroundResource((R.drawable.settingsbottomsheet_night))
+                profileInfoSheet.setBackgroundResource(R.drawable.settingsbottomsheet_night)
+                firstNameEditText.setBackgroundResource(R.drawable.edittext_night)
+                lastNameEditText.setBackgroundResource(R.drawable.edittext_night)
+                emailEditText.setBackgroundResource(R.drawable.edittext_night)
             }
+
+            BottomSheetBehavior.from(profileInfoSheet).apply {
+                peekHeight = 0
+                this.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
+            saveButton.setOnClickListener{
+                val firstName = firstNameEditText.text.toString()
+                val lastName = lastNameEditText.text.toString()
+
+                val uid = maAuth.currentUser?.uid
+                dbRef.child("Users").child(uid.toString()).child("FirstName").setValue(firstName)
+                dbRef.child("Users").child(uid.toString()).child("LastName").setValue(lastName)
+            }
+
+            logoutButton.setOnClickListener{
+                Paper.book().write(DatabaseModule().emailKey, "emailKey")
+                Paper.book().write(DatabaseModule().passKey, "passKey")
+                maAuth.signOut()
+                val intent: Intent = Intent(applicationContext, MainActivity::class.java)
+                startActivity(intent)
+                finishAffinity()
+            }
+
+            dbRef.addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    nameText.setText(snapshot.child("Users").child(uid.toString()).child("FirstName").value.toString()
+                            +" "+ snapshot.child("Users").child(uid.toString()).child("LastName").value.toString() )
+
+
+                    emailText.setText(snapshot.child("Users").child(uid.toString()).child("email").value.toString())
+                    firstNameEditText.setText(snapshot.child("Users").child(uid.toString()).child("FirstName").value.toString())
+                    lastNameEditText.setText(snapshot.child("Users").child(uid.toString()).child("LastName").value.toString())
+                    emailEditText.setText(snapshot.child("Users").child(uid.toString()).child("email").value.toString())
+                    val imgUrl = snapshot.child("Users").child(uid.toString()).child("profile").value.toString()
+                    if(imgUrl == null || imgUrl.isEmpty() == true){
+
+                    }
+                    else{
+                        Picasso.get().load(imgUrl).into(profileImage)
+                        Picasso.get().load(imgUrl).into(profileInfoImg)
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+
+
+            profileInfoCard.setOnClickListener{
+                BottomSheetBehavior.from(profileInfoSheet).apply {
+                    peekHeight = 400
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+            closeProfileInfoSheet.setOnClickListener{
+                BottomSheetBehavior.from(profileInfoSheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 300
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+
+
+
+
+
 
             helpCard.setOnClickListener{
                 BottomSheetBehavior.from(infoCard).apply {
@@ -321,8 +395,7 @@ class HomePage : AppCompatActivity() {
                 }
                 infoCardIcon.setImageResource(R.drawable.help)
                 infoCardText.setText("For more information and queries, contact the developer on following address:\n\n" +
-                        "mail: pankajisrani17@gmail.com\n" +
-                        "developer name: Pankaj Israni")
+                        "mail: pankajisrani17@gmail.com\n")
                 BottomSheetBehavior.from(settings_bottomsheet).apply {
                     peekHeight = 0
                     this.state = BottomSheetBehavior.STATE_COLLAPSED
