@@ -1,5 +1,9 @@
 package com.pankaj.askgpt_ai
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.WindowManager
@@ -10,24 +14,41 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import yuku.ambilwarna.AmbilWarnaDialog
 
 
 class ReadingMode : AppCompatActivity() {
+    private var mDefaultColor = 0
+    lateinit var readingModeText: TextView
+    lateinit var mAuth: FirebaseAuth
+    lateinit var dbRef: DatabaseReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reading_mode)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        mAuth = FirebaseAuth.getInstance()
+        dbRef = FirebaseDatabase.getInstance().reference
+
+
 
         val displayMetrics: DisplayMetrics = resources.displayMetrics
         val dpHeight = displayMetrics.heightPixels / displayMetrics.density
         val dpWidth = displayMetrics.widthPixels / displayMetrics.density
 
         val readingModeCard = findViewById<FrameLayout>(R.id.readingModeCard)
-        val readingModeText = findViewById<TextView>(R.id.readingModeText)
+        readingModeText = findViewById<TextView>(R.id.readingModeText)
         val readingModeCloseCard = findViewById<CardView>(R.id.closeReadingModeCard)
         val readingModeCloseIcon = findViewById<ImageView>(R.id.closeReadingModeIcon)
+        val colorPicker = findViewById<CardView>(R.id.colorPicker)
+        val shareContent = findViewById<CardView>(R.id.shareContent)
+        val copyContent = findViewById<CardView>(R.id.copyContent)
 
         readingModeText.text = intent.extras?.getString("text")
+
 
         BottomSheetBehavior.from(readingModeCard).apply {
             peekHeight = (dpHeight / 2).toInt()
@@ -46,6 +67,17 @@ class ReadingMode : AppCompatActivity() {
             readingModeCard.setBackgroundResource(R.drawable.readingmode_night)
             readingModeCloseIcon.setImageResource(R.drawable.close_night)
         }
+
+        colorPicker.setOnClickListener{
+            openColorPickerDialogue()
+        }
+        shareContent.setOnClickListener{
+            shareText(readingModeText.text.toString())
+        }
+        copyContent.setOnClickListener{
+            copyToClipboard(readingModeText.text.toString())
+            Toast.makeText(applicationContext, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onBackPressed() {
@@ -53,5 +85,41 @@ class ReadingMode : AppCompatActivity() {
         finish()
 
         super.onBackPressed()
+    }
+
+
+    fun openColorPickerDialogue() {
+
+
+        val colorPickerDialogue = AmbilWarnaDialog(this, mDefaultColor,
+            object : AmbilWarnaDialog.OnAmbilWarnaListener {
+                override fun onCancel(dialog: AmbilWarnaDialog?) {
+
+                }
+
+                override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                    mDefaultColor = color
+                    readingModeText.setTextColor(mDefaultColor)
+                }
+
+            })
+        colorPickerDialogue.show()
+    }
+    private fun shareText(titlee: String) {
+
+
+        val intent = Intent(Intent.ACTION_SEND)
+
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here")
+
+        intent.putExtra(Intent.EXTRA_TEXT, titlee)
+        startActivity(Intent.createChooser(intent, "Share Via"))
+    }
+
+    fun copyToClipboard(text: CharSequence){
+        val clipboard = applicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("label",text)
+        clipboard.setPrimaryClip(clip)
     }
 }
