@@ -215,7 +215,7 @@ class HomePage : AppCompatActivity() {
                     this.state = BottomSheetBehavior.STATE_EXPANDED
                 }
                 BottomSheetBehavior.from(bottomsheet).apply {
-                    peekHeight = 150
+                    peekHeight = 170
                     this.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
@@ -226,7 +226,7 @@ class HomePage : AppCompatActivity() {
                     this.state = BottomSheetBehavior.STATE_HIDDEN
                 }
                 BottomSheetBehavior.from(bottomsheet).apply {
-                    peekHeight = 150
+                    peekHeight = 170
                     this.state = BottomSheetBehavior.STATE_EXPANDED
                 }
             }
@@ -272,6 +272,92 @@ class HomePage : AppCompatActivity() {
                 }
 
             })
+
+            val infoCard = findViewById<FrameLayout>(R.id.infoCard)
+            val infoCardIcon = findViewById<ImageView>(R.id.infoCardIcon)
+            val infoCardText = findViewById<TextView>(R.id.infoCardText)
+            val closeInfoCard = findViewById<CardView>(R.id.closeInfoCard)
+
+            BottomSheetBehavior.from(infoCard).apply {
+                peekHeight = 0
+                this.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
+            val appearance = findViewById<CardView>(R.id.appearance)
+
+            if(resources.getString(R.string.mode) == "Day"){
+                infoCard.setBackgroundResource(R.drawable.settings_bottomsheet)
+            }else{
+                infoCard.setBackgroundResource((R.drawable.settingsbottomsheet_night))
+            }
+            val privacyCard = findViewById<CardView>(R.id.privacyCard)
+
+            privacyCard.setOnClickListener{
+                BottomSheetBehavior.from(infoCard).apply {
+                    peekHeight = 250
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                infoCardIcon.setImageResource(R.drawable.privacy)
+                infoCardText.setText("This application made with the intention of keeping privacy at priority" +
+                        ". Messages are reset everytime application reloads, save important messages to keep them permanently.")
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+            val helpCard = findViewById<CardView>(R.id.helpCard)
+
+            val profileInfoCard = findViewById<CardView>(R.id.profileInfoCard)
+
+            profileInfoCard.setOnClickListener{
+
+            }
+
+            helpCard.setOnClickListener{
+                BottomSheetBehavior.from(infoCard).apply {
+                    peekHeight = 250
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                infoCardIcon.setImageResource(R.drawable.help)
+                infoCardText.setText("For more information and queries, contact the developer on following address:\n\n" +
+                        "mail: pankajisrani17@gmail.com\n" +
+                        "developer name: Pankaj Israni")
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+
+            appearance.setOnClickListener{
+                BottomSheetBehavior.from(infoCard).apply {
+                    peekHeight = 250
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                infoCardIcon.setImageResource(R.drawable.appearance)
+                infoCardText.setText("Appearance themes are changed automatically accordingly. " +
+                        "Change your system theme to set application theme to" +
+                        " either dark mode or light mode.")
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+
+            closeInfoCard.setOnClickListener{
+                BottomSheetBehavior.from(infoCard).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 300
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+
 
             cardShareToFriends.setOnClickListener{
                 //https://github.com/1-Pankaj/AskGPT-Ai

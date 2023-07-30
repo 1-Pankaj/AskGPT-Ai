@@ -446,7 +446,8 @@ class MainActivity : AppCompatActivity() {
                                     dbRef.child("Users").child(user.uid).child("LastName").setValue(lastName)
                                     dbRef.child("Users").child(user.uid).child("email").setValue(emailData)
                                     dbRef.child("Users").child(user.uid).child("verification").setValue("unverified")
-                                    dbRef.child("Users").child(user.uid).child("profile").setValue("")
+                                    dbRef.child("Users").child(user.uid).child("saved").setValue("")
+                                    dbRef.child("Users").child(user.uid).child("profile").setValue("https://firebasestorage.googleapis.com/v0/b/askgpt-ai.appspot.com/o/personImage.png?alt=media&token=b4fb1713-a619-44bd-9033-d3fd50963dd5")
                                     Paper.book().write(DatabaseModule().emailKey, emailData)
                                     Paper.book().write(DatabaseModule().passKey, passwordText)
                                     cardLoad.visibility = CardView.GONE
