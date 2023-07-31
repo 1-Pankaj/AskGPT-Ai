@@ -1,15 +1,19 @@
 package com.pankaj.askgpt_ai
 
+import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.GnssAntennaInfo.Listener
 import android.media.Image
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +38,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import io.paperdb.Paper
 import okhttp3.Call
@@ -47,6 +54,7 @@ import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.util.UUID
 
 
 class HomePage : AppCompatActivity() {
@@ -57,6 +65,12 @@ class HomePage : AppCompatActivity() {
     lateinit var modeChangeCard: CardView
     lateinit var modeImage: ImageView
     lateinit var mode: String
+    lateinit var profileInfoImg: ImageView
+    lateinit var profileInfoImgCard: CardView
+
+
+    var fileUri: Uri? = null;
+
 
     val JSON: MediaType = "application/json; charset=utf-8".toMediaType();
     var client = OkHttpClient()
@@ -288,7 +302,7 @@ class HomePage : AppCompatActivity() {
 
             val profileInfoSheet = findViewById<FrameLayout>(R.id.profileInfoSheet)
             val closeProfileInfoSheet = findViewById<CardView>(R.id.closeProfileInfoSheet)
-            val profileInfoImg = findViewById<ImageView>(R.id.profileImg)
+            profileInfoImg = findViewById<ImageView>(R.id.profileImg)
             val firstNameEditText = findViewById<EditText>(R.id.firstNameEditText)
             val lastNameEditText = findViewById<EditText>(R.id.lastNameEditText)
             val emailEditText = findViewById<EditText>(R.id.emailEditText)
@@ -465,10 +479,86 @@ class HomePage : AppCompatActivity() {
                 }
 
             }
+
+            profileInfoImgCard = findViewById<CardView>(R.id.profileImgCard)
+
+            profileInfoImgCard.setOnClickListener{
+                val intent = Intent()
+                intent.type = "image/*"
+                intent.action = Intent.ACTION_GET_CONTENT
+                startActivityForResult(Intent.createChooser(intent, "Pick your image to upload"), 22)
+            }
+
         } catch (e: Exception) {
             Log.d("dax", e.message.toString())
         }
     }
+
+
+
+
+
+    //uploadImage
+    fun uploadImage() {
+
+        if (fileUri != null) {
+
+            val progressDialog = ProgressDialog(this)
+
+            progressDialog.setTitle("Uploading")
+            progressDialog.setMessage("Please wait...")
+            progressDialog.show()
+
+
+            val mAuth = FirebaseAuth.getInstance()
+            val uid = mAuth.currentUser?.uid
+            val dbRef = FirebaseDatabase.getInstance().reference
+            val ref: StorageReference = FirebaseStorage.getInstance().getReference()
+                .child(uid.toString()).child("image")
+
+            val uploadTask : UploadTask = ref.putFile(fileUri!!)
+
+
+            val urlTask = uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                ref.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    progressDialog.dismiss()
+                    val downloadUri = task.result
+                    dbRef.child("Users").child(uid.toString()).child("profile").setValue(downloadUri.toString())
+                    Toast.makeText(applicationContext, "Successful", Toast.LENGTH_SHORT).show()
+                } else {
+                    progressDialog.dismiss()
+                    Toast.makeText(applicationContext, "Failure", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 22 && resultCode == RESULT_OK && data != null && data.data != null) {
+
+            fileUri = data.data
+            try {
+                uploadImage()
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+
+
 
 
     fun addToChat(message: String?, sentBy: String?, image: Boolean?) {
@@ -506,7 +596,7 @@ class HomePage : AppCompatActivity() {
         val requestBody = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/images/generations")
-            .header("Authorization", "Bearer API_KEY") //API KEYS GO HERE
+            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
             .post(requestBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -523,6 +613,9 @@ class HomePage : AppCompatActivity() {
 
         })
     }
+
+
+
 
 
 
