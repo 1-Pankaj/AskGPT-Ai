@@ -445,6 +445,11 @@ class HomePage : AppCompatActivity() {
                 }
             }
 
+            val savedMessages = findViewById<CardView>(R.id.savedMessages)
+            savedMessages.setOnClickListener{
+                val intent = Intent(applicationContext, SavedMessages::class.java)
+                startActivity(intent)
+            }
 
             cardShareToFriends.setOnClickListener{
                 //https://github.com/1-Pankaj/AskGPT-Ai
@@ -479,6 +484,8 @@ class HomePage : AppCompatActivity() {
                 }
 
             }
+
+
 
             profileInfoImgCard = findViewById<CardView>(R.id.profileImgCard)
 
@@ -644,7 +651,7 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
+            .header("Authorization", "Bearer API-KEy") //API KEYS GO HERE
             .post(body)
             .build()
 
@@ -703,6 +710,15 @@ class HomePage : AppCompatActivity() {
             top_to_bottom.duration = 400
             val handler = Handler(Looper.getMainLooper())
 
+            val dbRef = FirebaseDatabase.getInstance().reference
+            val mAuth = FirebaseAuth.getInstance()
+
+            if(context.resources.getString(R.string.mode) == "Day"){
+                holder.titleText.setBackgroundResource(R.drawable.edittext)
+            }else{
+                holder.titleText.setBackgroundResource(R.drawable.edittext_night)
+            }
+
             if (message.getsentby() == message.SENT_BY_ME) {
                 holder.leftChatView.visibility = View.GONE
                 holder.rightChatView.visibility = View.VISIBLE
@@ -720,11 +736,54 @@ class HomePage : AppCompatActivity() {
             else {
                 holder.rightChatView.visibility = View.GONE
                 holder.leftChatView.visibility = View.VISIBLE
+                holder.imageCard.visibility = View.GONE
                 holder.leftTextView.text = message.getmessage()
                 setAnimation(holder.leftChatView, position)
             }
 
+            var saveMessageText = ""
+            holder.saveMessage.setOnClickListener{
+                if(messageList.get(position).getimage() == true){
+
+                }else{
+
+                    holder.saveMessageCard.visibility = View.VISIBLE
+                    holder.saveMessageCard.startAnimation(bottom_to_top)
+                    saveMessageText = messageList.get(position).getmessage().toString()
+                    //code here
+                }
+            }
+
+            holder.saveButton.setOnClickListener{
+
+
+                val titleText = holder.titleText.text.toString()
+                if(titleText.isEmpty()){
+                    holder.titleText.setError("Title can't be empty!")
+                }else{
+
+                    dbRef.child("Users").child(mAuth.currentUser?.uid.toString()).child("messages").child(titleText.toString()).setValue(saveMessageText)
+                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+
+            holder.closeSaveMessageCard.setOnClickListener{
+
+                holder.saveMessageCard.startAnimation(top_to_bottom)
+                handler.postDelayed({
+                    holder.saveMessageCard.visibility = View.GONE
+                },400)
+            }
+
             holder.leftChatView.setOnLongClickListener(){
+
+                if(messageList.get(position).getimage() == true){
+                    holder.saveMessage.visibility = View.GONE
+                }
+                else{
+                    holder.saveMessage.visibility = View.VISIBLE
+                }
 
                 holder.popupCard.visibility = View.VISIBLE
                 holder.popupCard.startAnimation(bottom_to_top)
@@ -776,6 +835,11 @@ class HomePage : AppCompatActivity() {
             var closeCard: CardView
             var imageCard: CardView
             var imageView: ImageView
+            var titleText: TextView
+            var saveMessageCard: CardView
+            var saveButton: MaterialButton
+            var saveMessage: CardView
+            var closeSaveMessageCard: CardView
             init {
                 leftChatView = itemView.findViewById<LinearLayout>(R.id.left_chat)
                 rightChatView = itemView.findViewById<LinearLayout>(R.id.right_chat)
@@ -787,9 +851,15 @@ class HomePage : AppCompatActivity() {
                 closeCard = itemView.findViewById<CardView>(R.id.closeCard)
                 imageCard = itemView.findViewById<CardView>(R.id.imageCard)
                 imageView = itemView.findViewById<ImageView>(R.id.imageView)
+                titleText = itemView.findViewById<TextView>(R.id.titleText)
+                saveMessageCard = itemView.findViewById<CardView>(R.id.saveMessageCard)
+                saveButton = itemView.findViewById<MaterialButton>(R.id.saveButton)
+                saveMessage = itemView.findViewById<CardView>(R.id.saveMessage)
+                closeSaveMessageCard = itemView.findViewById<CardView>(R.id.closeSaveMessageCard)
 
             }
         }
     }
+
 
 }

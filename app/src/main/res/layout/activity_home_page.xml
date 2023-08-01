@@ -356,6 +356,7 @@
                 app:cardBackgroundColor="#0000FFFF"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
+                android:id="@+id/savedMessages"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless">
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -694,7 +695,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:inputType="textEmailAddress"
+                android:inputType="textPersonName"
                 android:maxLines="1"
                 android:layout_marginHorizontal="50dp"
                 android:maxLength="55"
@@ -711,7 +712,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:inputType="textEmailAddress"
+                android:inputType="textPersonName"
                 android:maxLines="1"
                 android:layout_marginHorizontal="50dp"
                 android:layout_marginTop="10dp"

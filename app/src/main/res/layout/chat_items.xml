@@ -57,22 +57,26 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
         app:cardCornerRadius="30dp"
         android:id="@+id/popupCard"
-        android:visibility="gone"
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         android:layout_marginBottom="10dp"
         android:layout_below="@id/left_chat"
         android:layout_marginStart="50dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
         <androidx.cardview.widget.CardView
             android:layout_width="40dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             android:id="@+id/copyCard"
-            android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="20dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="15dp"
             android:layout_height="40dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless">
@@ -86,8 +90,25 @@
             android:layout_width="40dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
+            android:id="@+id/saveMessage"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/save"/>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
             android:id="@+id/readingMode"
             android:layout_gravity="center"
+            android:layout_marginStart="10dp"
             android:layout_height="40dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless">
@@ -103,8 +124,9 @@
             app:cardElevation="0dp"
             android:id="@+id/closeCard"
             app:cardBackgroundColor="#0000FFFF"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="20dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
             android:layout_height="40dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless">
@@ -114,8 +136,70 @@
                 android:layout_gravity="center"
                 android:src="@drawable/close_extra"/>
         </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="250dp"
+        android:layout_below="@id/popupCard"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="5dp"
+        android:layout_height="180dp"
+        android:padding="8dp"
+        android:id="@+id/saveMessageCard"
+        android:layout_marginStart="50dp">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="30dp"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp"
+            android:id="@+id/closeSaveMessageCard"
+            app:cardBackgroundColor="#0000FFFF"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_height="30dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:src="@drawable/close_extra"/>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="10dp"
+            android:text="Save Response"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:maxLength="55"
+            android:layout_gravity="center"
+            android:id="@+id/titleText"
+            android:background="@drawable/edittext"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_marginTop="-10dp"
+            android:hint="Title"
+            android:textSize="14sp"/>
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:id="@+id/saveButton"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="15dp"/>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
