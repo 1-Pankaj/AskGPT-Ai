@@ -5,15 +5,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.location.GnssAntennaInfo.Listener
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +29,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -53,8 +51,8 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
 import java.io.IOException
-import java.util.UUID
 
 
 class HomePage : AppCompatActivity() {
@@ -309,18 +307,29 @@ class HomePage : AppCompatActivity() {
             val saveButton = findViewById<MaterialButton>(R.id.saveButton)
             val logoutButton = findViewById<MaterialButton>(R.id.logoutButton)
 
+            val accountSettings = findViewById<CardView>(R.id.accountSettings)
+            val accountSettingsCard = findViewById<FrameLayout>(R.id.accountSettingsCard)
+            val closeAccountSettingsCard = findViewById<MaterialCardView>(R.id.closeAccountSettingsCard)
+
+            BottomSheetBehavior.from(accountSettingsCard).apply {
+                peekHeight = 0
+                this.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
             if(resources.getString(R.string.mode) == "Day"){
                 infoCard.setBackgroundResource(R.drawable.settings_bottomsheet)
                 profileInfoSheet.setBackgroundResource(R.drawable.settings_bottomsheet)
                 firstNameEditText.setBackgroundResource(R.drawable.edittext)
                 lastNameEditText.setBackgroundResource(R.drawable.edittext)
                 emailEditText.setBackgroundResource(R.drawable.edittext)
+                accountSettingsCard.setBackgroundResource(R.drawable.settings_bottomsheet)
             }else{
                 infoCard.setBackgroundResource((R.drawable.settingsbottomsheet_night))
                 profileInfoSheet.setBackgroundResource(R.drawable.settingsbottomsheet_night)
                 firstNameEditText.setBackgroundResource(R.drawable.edittext_night)
                 lastNameEditText.setBackgroundResource(R.drawable.edittext_night)
                 emailEditText.setBackgroundResource(R.drawable.edittext_night)
+                accountSettingsCard.setBackgroundResource(R.drawable.settingsbottomsheet_night)
             }
 
             BottomSheetBehavior.from(profileInfoSheet).apply {
@@ -496,13 +505,88 @@ class HomePage : AppCompatActivity() {
                 startActivityForResult(Intent.createChooser(intent, "Pick your image to upload"), 22)
             }
 
+
+
+            //code here
+
+            accountSettings.setOnClickListener{
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+                BottomSheetBehavior.from(accountSettingsCard).apply {
+                    peekHeight = 400
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+
+            closeAccountSettingsCard.setOnClickListener{
+                BottomSheetBehavior.from(accountSettingsCard).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 300
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+            val clearCacheCard = findViewById<CardView>(R.id.cacheClearCard)
+            val accountDeleteCard = findViewById<CardView>(R.id.accountDeleteCard)
+
+            clearCacheCard.setOnClickListener{
+                val builder = MaterialAlertDialogBuilder(this)
+                builder.setTitle("Alert!")
+                builder.setMessage("Clearing cache will log you out of the app, Are you sure?")
+
+                builder.setPositiveButton("YES") { dialog, which ->
+                    maAuth.signOut()
+                    Paper.book().write(DatabaseModule().emailKey, "emailKey")
+                    Paper.book().write(DatabaseModule().emailKey, "passKey")
+                    val dir = applicationContext.cacheDir
+                    try {
+                        deleteDir(dir)
+                    }
+                    catch (e: Exception){
+                        Toast.makeText(applicationContext, "Error deleting cache", Toast.LENGTH_SHORT).show()
+                    }
+                    finish()
+                    finishAffinity()
+                }
+
+                builder.setNegativeButton("CANCEL") { dialog, which ->
+                    dialog.dismiss()
+                }
+
+
+                builder.show()
+            }
+
+
+
         } catch (e: Exception) {
             Log.d("dax", e.message.toString())
         }
     }
 
 
-
+    fun deleteDir(dir: File?): Boolean {
+        return if (dir != null && dir.isDirectory) {
+            val children = dir.list()
+            for (i in children.indices) {
+                val success = deleteDir(File(dir, children[i]))
+                if (!success) {
+                    return false
+                }
+            }
+            dir.delete()
+        } else if (dir != null && dir.isFile) {
+            dir.delete()
+        } else {
+            false
+        }
+    }
 
 
     //uploadImage
@@ -600,6 +684,9 @@ class HomePage : AppCompatActivity() {
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+
+
+
         val requestBody = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/images/generations")
@@ -651,7 +738,7 @@ class HomePage : AppCompatActivity() {
         val body = RequestBody.create(JSON, jsonBody.toString())
         val request: Request = Request.Builder()
             .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer API-KEy") //API KEYS GO HERE
+            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
             .post(body)
             .build()
 
@@ -749,8 +836,8 @@ class HomePage : AppCompatActivity() {
 
                     holder.saveMessageCard.visibility = View.VISIBLE
                     holder.saveMessageCard.startAnimation(bottom_to_top)
+                    holder.titleText.setFocusable(true)
                     saveMessageText = messageList.get(position).getmessage().toString()
-                    //code here
                 }
             }
 
@@ -764,12 +851,17 @@ class HomePage : AppCompatActivity() {
 
                     dbRef.child("Users").child(mAuth.currentUser?.uid.toString()).child("messages").child(titleText.toString()).setValue(saveMessageText)
                     Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
+                    holder.saveMessageCard.startAnimation(top_to_bottom)
+                    handler.postDelayed({
+                        holder.saveMessageCard.visibility = View.GONE
+                    },400)
                 }
 
             }
 
             holder.closeSaveMessageCard.setOnClickListener{
 
+                holder.titleText.setFocusable(false)
                 holder.saveMessageCard.startAnimation(top_to_bottom)
                 handler.postDelayed({
                     holder.saveMessageCard.visibility = View.GONE
