@@ -769,6 +769,7 @@ class HomePage : AppCompatActivity() {
 
         try {
             if (response != null) {
+                (messageList as ArrayList<Message>).removeAt((messageList as ArrayList<Message>).size - 1)
                 addToChat(response, "bot", false)
             };
         } catch (e: Exception) {
@@ -778,6 +779,7 @@ class HomePage : AppCompatActivity() {
 
 
     fun CallImageAPI(text: String?) {
+        (messageList as ArrayList<Message>).add(Message("Typing...", "bot", false))
         //API CALL
         val jsonBody = JSONObject()
         try {
@@ -836,6 +838,7 @@ class HomePage : AppCompatActivity() {
 
 
     fun callAPI(question : String){
+        (messageList as ArrayList<Message>).add(Message("Typing...", "bot", false))
         //okhttp
         val jsonBody = JSONObject()
         try {
