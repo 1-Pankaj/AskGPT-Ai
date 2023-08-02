@@ -212,22 +212,39 @@ class HomePage : AppCompatActivity() {
             click.startAnimation(text_animation3)
 
             click.setOnClickListener {
-                BottomSheetBehavior.from(bottomsheet).apply {
-                    peekHeight = 170
-                    this.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+
+                if(maAuth.currentUser?.isEmailVerified == true) {
+                    BottomSheetBehavior.from(bottomsheet).apply {
+                        peekHeight = 170
+                        this.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                    }
+                    mainIllustration.startAnimation(main_illustration)
+                    unleashText.startAnimation(remove_items)
+                    powertext.startAnimation(remove_items)
+                    gptText.startAnimation(remove_items)
+                    click.startAnimation(remove_items)
+                    click.isEnabled = false
+                    handler.postDelayed({
+                        unleashText.startAnimation(fade_out)
+                        powertext.startAnimation(fade_out)
+                        gptText.startAnimation(fade_out)
+                        click.startAnimation(fade_out)
+                    }, 1200)
                 }
-                mainIllustration.startAnimation(main_illustration)
-                unleashText.startAnimation(remove_items)
-                powertext.startAnimation(remove_items)
-                gptText.startAnimation(remove_items)
-                click.startAnimation(remove_items)
-                click.isEnabled = false
-                handler.postDelayed({
-                    unleashText.startAnimation(fade_out)
-                    powertext.startAnimation(fade_out)
-                    gptText.startAnimation(fade_out)
-                    click.startAnimation(fade_out)
-                }, 1200)
+                else{
+                    val builder = MaterialAlertDialogBuilder(this)
+                    builder.setTitle("Alert!")
+                    builder.setMessage("Verify your email before you can use this application.\n\nIf already verified, restart application!")
+                    builder.setPositiveButton("Okay") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    builder.setNegativeButton("Send again"){ dialog, which ->
+                        maAuth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
+                            Toast.makeText(applicationContext, "Verification mail sent", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    builder.show()
+                }
             }
 
             settingCard.setOnClickListener {
@@ -596,13 +613,19 @@ class HomePage : AppCompatActivity() {
                                 Paper.book().write(DatabaseModule().emailKey, "emailKey")
                                 Paper.book().write(DatabaseModule().emailKey, "passKey")
                                 dbRef.child("Users").child(uid.toString()).removeValue()
+                                val ref: StorageReference = FirebaseStorage.getInstance().getReference()
+                                if(ref.child(uid.toString()) != null){
+                                    ref.child(uid.toString()).delete()
+                                }
                                 val dir = applicationContext.cacheDir
                                 try {
                                     deleteDir(dir)
                                 }
                                 catch (e: Exception){
-                                    Toast.makeText(applicationContext, "Error deleting cache", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(applicationContext, "Error deleting cache, remove manually if still exists!", Toast.LENGTH_SHORT).show()
                                 }
+                                val intent = Intent(applicationContext, HomePage::class.java)
+                                startActivity(intent)
                                 finish()
                             }
                         }

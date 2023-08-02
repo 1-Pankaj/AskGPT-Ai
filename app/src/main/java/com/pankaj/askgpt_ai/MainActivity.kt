@@ -546,8 +546,24 @@ class MainActivity : AppCompatActivity() {
                                     cardLoad.visibility = CardView.GONE
                                     cardLoad.startAnimation(cardloading_anim)
                                     val intent = Intent(applicationContext, HomePage::class.java)
-                                    startActivity(intent)
-                                    finish()
+
+                                    maAuth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
+                                        Toast.makeText(applicationContext, "Verification link sent", Toast.LENGTH_SHORT).show()
+                                        val builder = MaterialAlertDialogBuilder(this)
+                                        builder.setTitle("Alert!")
+                                        builder.setMessage("An verification link has been sent to your email address, verify your email address before using the application!")
+                                        builder.setPositiveButton("Okay") { dialog, which ->
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                        builder.show()
+                                    }?.addOnCanceledListener {
+                                        Toast.makeText(applicationContext, "Error sending verification link", Toast.LENGTH_SHORT).show()
+                                    }
+
+
+
+
                                 }
                                 else{
                                     Toast.makeText(applicationContext, "Error signing up, try again!", Toast.LENGTH_SHORT).show()
