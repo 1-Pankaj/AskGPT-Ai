@@ -764,27 +764,40 @@ class HomePage : AppCompatActivity() {
             e.printStackTrace()
         }
 
-
-
+        val dbRef = FirebaseDatabase.getInstance().reference
         val requestBody = RequestBody.create(JSON, jsonBody.toString())
-        val request: Request = Request.Builder()
-            .url("https://api.openai.com/v1/images/generations")
-            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
-            .post(requestBody)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                addResponse("Failure to load response")
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val apiKey = snapshot.child("Admin").child("API-KEY").value.toString()
+                val request: Request = Request.Builder()
+                    .url("https://api.openai.com/v1/images/generations")
+                    .header("Authorization", apiKey.toString()) //API KEYS GO HERE
+                    .post(requestBody)
+                    .build()
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        addResponse("Failure to load response")
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        val jsonObject = JSONObject(response.body?.string())
+                        val imageUrl = jsonObject.getJSONArray("data").getJSONObject(0).getString("url")
+//
+                        addToChat(imageUrl, "bot", true)
+                    }
+
+                })
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val jsonObject = JSONObject(response.body?.string())
-                val imageUrl = jsonObject.getJSONArray("data").getJSONObject(0).getString("url")
-//
-                addToChat(imageUrl, "bot", true)
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(applicationContext, "Error retrieving data, reload application!", Toast.LENGTH_SHORT).show()
             }
 
         })
+
+
+
+
     }
 
 
@@ -815,37 +828,49 @@ class HomePage : AppCompatActivity() {
 
 
         val body = RequestBody.create(JSON, jsonBody.toString())
-        val request: Request = Request.Builder()
-            .url("https://api.openai.com/v1/completions")
-            .header("Authorization", "Bearer API-KEY") //API KEYS GO HERE
-            .post(body)
-            .build()
+        val dbRef = FirebaseDatabase.getInstance().reference
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val apiKey = snapshot.child("Admin").child("API-KEY").value.toString()
+                val request: Request = Request.Builder()
+                    .url("https://api.openai.com/v1/completions")
+                    .header("Authorization", apiKey.toString()) //API KEYS GO HERE
+                    .post(body)
+                    .build()
 
-        client.newCall(request).enqueue(object : Callback{
-            override fun onFailure(call: Call, e: IOException) {
-                addResponse("Failure to load response due to "+e.message.toString())
+                client.newCall(request).enqueue(object : Callback{
+                    override fun onFailure(call: Call, e: IOException) {
+                        addResponse("Failure to load response due to "+e.message.toString())
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        if(response.isSuccessful){
+
+                            try {
+                                var jsonObject = JSONObject(response.body?.string())
+                                val jsonArray = jsonObject.getJSONArray("choices")
+                                val result = jsonArray.getJSONObject(0).getString("text")
+                                Log.d("dax", result.toString())
+                                addResponse(result.toString().trim())
+
+                            } catch (e: JSONException) {
+                                Log.d("dax", e.message.toString())
+                            }
+                        }
+                        else{
+                            addResponse("Failure to load response, try again!")
+                        }
+                    }
+
+                })
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                if(response.isSuccessful){
-
-                    try {
-                            var jsonObject = JSONObject(response.body?.string())
-                            val jsonArray = jsonObject.getJSONArray("choices")
-                            val result = jsonArray.getJSONObject(0).getString("text")
-                            Log.d("dax", result.toString())
-                            addResponse(result.toString().trim())
-
-                    } catch (e: JSONException) {
-                        Log.d("dax", e.message.toString())
-                    }
-                }
-                else{
-                    addResponse("Failure to load response, try again!")
-                }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(applicationContext, "Error retrieving data, reload application!", Toast.LENGTH_SHORT).show()
             }
 
         })
+
     }
     class MessageAdapter(var messageList: List<Message>, var context: Context) : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
         var lastPosition = messageList.size
