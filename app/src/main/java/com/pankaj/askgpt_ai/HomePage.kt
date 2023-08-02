@@ -966,7 +966,7 @@ class HomePage : AppCompatActivity() {
 
                     holder.saveMessageCard.visibility = View.VISIBLE
                     holder.saveMessageCard.startAnimation(bottom_to_top)
-                    holder.titleText.setFocusable(true)
+
                     saveMessageText = messageList.get(position).getmessage().toString()
                 }
             }
@@ -991,7 +991,7 @@ class HomePage : AppCompatActivity() {
 
             holder.closeSaveMessageCard.setOnClickListener{
 
-                holder.titleText.setFocusable(false)
+
                 holder.saveMessageCard.startAnimation(top_to_bottom)
                 handler.postDelayed({
                     holder.saveMessageCard.visibility = View.GONE
