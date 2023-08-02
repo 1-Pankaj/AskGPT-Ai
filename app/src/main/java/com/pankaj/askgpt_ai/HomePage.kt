@@ -567,6 +567,51 @@ class HomePage : AppCompatActivity() {
             val clearCacheCard = findViewById<CardView>(R.id.cacheClearCard)
             val accountDeleteCard = findViewById<CardView>(R.id.accountDeleteCard)
 
+
+
+            accountDeleteCard.setOnClickListener{
+                val builder = MaterialAlertDialogBuilder(this)
+                builder.setTitle("Alert!")
+                builder.setMessage("Deleting account will delete all your saved messages and your current data too, proceed with caution!" +
+                        "\n\nAre you sure to delete your account?")
+                builder.setOnDismissListener {
+
+                }
+                builder.setPositiveButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+                }
+                builder.setNegativeButton("Delete"){ dialog, which ->
+                    val builder2 = MaterialAlertDialogBuilder(this)
+                    builder2.setTitle("Final Warning!")
+                    builder2.setMessage("Proceed to delete your account?")
+                    builder2.setPositiveButton("Cancel"){ dialog, which ->
+                        dialog.dismiss()
+                    }
+                    builder2.setNegativeButton("Delete"){ dialog, which ->
+                        val uid = maAuth.currentUser?.uid
+                        maAuth.currentUser?.delete()?.addOnCompleteListener { task ->
+                            if (task.isSuccessful){
+                                maAuth.signOut()
+                                googleSignInClient.signOut()
+                                Paper.book().write(DatabaseModule().emailKey, "emailKey")
+                                Paper.book().write(DatabaseModule().emailKey, "passKey")
+                                dbRef.child("Users").child(uid.toString()).removeValue()
+                                val dir = applicationContext.cacheDir
+                                try {
+                                    deleteDir(dir)
+                                }
+                                catch (e: Exception){
+                                    Toast.makeText(applicationContext, "Error deleting cache", Toast.LENGTH_SHORT).show()
+                                }
+                                finish()
+                            }
+                        }
+                    }
+                    builder2.show()
+                }
+                builder.show()
+            }
+
             clearCacheCard.setOnClickListener{
                 val builder = MaterialAlertDialogBuilder(this)
                 builder.setTitle("Alert!")

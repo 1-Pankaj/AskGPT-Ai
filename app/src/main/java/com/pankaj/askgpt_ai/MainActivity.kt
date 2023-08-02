@@ -286,7 +286,6 @@ class MainActivity : AppCompatActivity() {
         val closeBottomSheet = findViewById<MaterialCardView>(R.id.closeBottomSheet)
 
         forgotPassText.setOnClickListener{
-            //code here
 
             BottomSheetBehavior.from(forgotPassBottomSheet).apply {
                 peekHeight = 250
