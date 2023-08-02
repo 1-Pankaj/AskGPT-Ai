@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "944773044945",
+    "firebase_url": "https://askgpt-ai-default-rtdb.firebaseio.com",
     "project_id": "askgpt-ai",
     "storage_bucket": "askgpt-ai.appspot.com"
   },
@@ -14,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "944773044945-6nlqv621t49qidc3sm213im1gfdk6ab3.apps.googleusercontent.com",
+          "client_id": "944773044945-5ji729m0fmvf45vnkgacf24rvdtfoq56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pankaj.askgpt_ai",
+            "certificate_hash": "bd26aa93a36eead94a8be932d6aff22d9a8eb344"
+          }
+        },
+        {
+          "client_id": "944773044945-j35arfr7smh0ll8ed953pjneclnkqtf5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

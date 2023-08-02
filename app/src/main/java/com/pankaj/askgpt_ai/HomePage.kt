@@ -27,10 +27,14 @@ import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -103,7 +107,11 @@ class HomePage : AppCompatActivity() {
             modeChangeCard = findViewById<CardView>(R.id.modeChangeCard)
             modeImage = findViewById<ImageView>(R.id.mode)
             mode = "text"
-
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            val googleSignInClient = GoogleSignIn.getClient(applicationContext, gso)
             modeChangeCard.setOnClickListener {
                 if (mode == "text") {
                     modeImage.setImageResource(R.drawable.image)
@@ -347,12 +355,37 @@ class HomePage : AppCompatActivity() {
             }
 
             logoutButton.setOnClickListener{
-                Paper.book().write(DatabaseModule().emailKey, "emailKey")
-                Paper.book().write(DatabaseModule().passKey, "passKey")
-                maAuth.signOut()
-                val intent: Intent = Intent(applicationContext, MainActivity::class.java)
-                startActivity(intent)
-                finishAffinity()
+                val builder = MaterialAlertDialogBuilder(this)
+                builder.setTitle("Alert!")
+                builder.setMessage("Are you sure to logout?")
+
+                builder.setPositiveButton("YES") { dialog, which ->
+                    maAuth.signOut()
+                    googleSignInClient.signOut()
+                    Paper.book().write(DatabaseModule().emailKey, "emailKey")
+                    Paper.book().write(DatabaseModule().emailKey, "passKey")
+                    val dir = applicationContext.cacheDir
+                    try {
+                        deleteDir(dir)
+                    }
+                    catch (e: Exception){
+                        Toast.makeText(applicationContext, "Error logging out!", Toast.LENGTH_SHORT).show()
+                    }
+                    val intent: Intent = Intent(applicationContext, MainActivity::class.java)
+                    startActivity(intent)
+                    finishAffinity()
+                }
+
+
+                builder.setNegativeButton("CANCEL") { dialog, which ->
+                    dialog.dismiss()
+                }
+
+
+                builder.show()
+
+
+
             }
 
             dbRef.addValueEventListener(object : ValueEventListener{
@@ -495,7 +528,6 @@ class HomePage : AppCompatActivity() {
             }
 
 
-
             profileInfoImgCard = findViewById<CardView>(R.id.profileImgCard)
 
             profileInfoImgCard.setOnClickListener{
@@ -542,6 +574,7 @@ class HomePage : AppCompatActivity() {
 
                 builder.setPositiveButton("YES") { dialog, which ->
                     maAuth.signOut()
+                    googleSignInClient.signOut()
                     Paper.book().write(DatabaseModule().emailKey, "emailKey")
                     Paper.book().write(DatabaseModule().emailKey, "passKey")
                     val dir = applicationContext.cacheDir
@@ -554,6 +587,7 @@ class HomePage : AppCompatActivity() {
                     finish()
                     finishAffinity()
                 }
+
 
                 builder.setNegativeButton("CANCEL") { dialog, which ->
                     dialog.dismiss()

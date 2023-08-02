@@ -2,6 +2,7 @@ package com.pankaj.askgpt_ai
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -14,6 +15,7 @@ import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.Interpolator
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -21,8 +23,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.postDelayed
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
 
@@ -30,6 +44,10 @@ import io.paperdb.Paper
 class MainActivity : AppCompatActivity() {
 
     var emailData = ""
+    lateinit var mGoogleSignInClient: GoogleSignInClient
+    val Req_Code: Int = 123
+    private lateinit var firebaseAuth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,11 +55,25 @@ class MainActivity : AppCompatActivity() {
 
         Paper.init(applicationContext)
 
+        FirebaseApp.initializeApp(this)
 
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        val googleSigninCard = findViewById<CardView>(R.id.googleCard)
+
+        googleSigninCard.setOnClickListener{
+
+            signInGoogle()
+        }
 
         val maAuth = FirebaseAuth.getInstance()
         val dbRef = FirebaseDatabase.getInstance().reference
-
 
 
 
@@ -70,6 +102,9 @@ class MainActivity : AppCompatActivity() {
         val passText = findViewById<EditText>(R.id.passwordText)
         val loginbtn = findViewById<MaterialButton>(R.id.loginBtn)
         val forgotPassText = findViewById<TextView>(R.id.forgotPassText)
+        val forgotPassBottomSheet = findViewById<FrameLayout>(R.id.forgotPassBottomSheet)
+        val forgotPassEditText = findViewById<EditText>(R.id.emailForgotPass)
+        val resetButton = findViewById<MaterialButton>(R.id.buttonReset)
 
 
         cardLogin.visibility = CardView.GONE
@@ -105,6 +140,8 @@ class MainActivity : AppCompatActivity() {
             parent.setBackgroundColor(Color.parseColor("#FFFFFF"))
             emailText.setBackgroundResource(R.drawable.edittext)
             passText.setBackgroundResource(R.drawable.edittext)
+            forgotPassBottomSheet.setBackgroundResource(R.drawable.settings_bottomsheet)
+            forgotPassEditText.setBackgroundResource(R.drawable.edittext)
         }
         else{
             //night stuff
@@ -120,6 +157,8 @@ class MainActivity : AppCompatActivity() {
             parent.setBackgroundColor(Color.parseColor("#000000"))
             emailText.setBackgroundResource(R.drawable.edittext_night)
             passText.setBackgroundResource(R.drawable.edittext_night)
+            forgotPassBottomSheet.setBackgroundResource(R.drawable.settingsbottomsheet_night)
+            forgotPassEditText.setBackgroundResource(R.drawable.edittext_night)
         }
 
         val illustration_anim = AnimationUtils.loadAnimation(this, R.anim.illustration_anim)
@@ -237,6 +276,61 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }, 2000)
+
+
+        BottomSheetBehavior.from(forgotPassBottomSheet).apply {
+            peekHeight = 0
+            this.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        val closeBottomSheet = findViewById<MaterialCardView>(R.id.closeBottomSheet)
+
+        forgotPassText.setOnClickListener{
+            //code here
+
+            BottomSheetBehavior.from(forgotPassBottomSheet).apply {
+                peekHeight = 250
+                this.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        resetButton.setOnClickListener{
+            val emailText = forgotPassEditText.text.toString()
+            if(emailText.isEmpty()){
+            }else{
+                maAuth.fetchSignInMethodsForEmail(emailText).addOnCompleteListener{
+                    if(it.result.signInMethods!!.isEmpty()){
+                        forgotPassEditText.setError("Email not registered!")
+                    }else{
+                        maAuth.sendPasswordResetEmail(emailText).addOnCompleteListener{
+                            BottomSheetBehavior.from(forgotPassBottomSheet).apply {
+                                peekHeight = 0
+                                this.state = BottomSheetBehavior.STATE_COLLAPSED
+                                this.state = BottomSheetBehavior.STATE_HIDDEN
+                            }
+                            val builder = MaterialAlertDialogBuilder(this)
+                            builder.setTitle("Alert!")
+                            builder.setMessage("Password reset mail sent, check your mails.")
+                            builder.setOnDismissListener {
+
+                            }
+                            builder.setPositiveButton("Ok") { dialog, which ->
+                                dialog.dismiss()
+                            }
+                            builder.show()
+                        }
+                    }
+                }
+            }
+        }
+
+        closeBottomSheet.setOnClickListener{
+            BottomSheetBehavior.from(forgotPassBottomSheet).apply {
+                peekHeight = 0
+                this.state = BottomSheetBehavior.STATE_COLLAPSED
+                this.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
 
 
 
@@ -476,6 +570,67 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+    private fun signInGoogle() {
+        val signInIntent: Intent = mGoogleSignInClient.signInIntent
+        startActivityForResult(signInIntent, Req_Code)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Req_Code) {
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleResult(task)
+        }
+    }
+
+    private fun handleResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
+            if (account != null) {
+                UpdateUI(account)
+            }
+        } catch (e: ApiException) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // this is where we update the UI after Google signin takes place
+    private fun UpdateUI(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                if(task.result.additionalUserInfo?.isNewUser == true){
+                    val dbRef = FirebaseDatabase.getInstance().reference
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("FirstName").setValue(account.displayName)
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("LastName").setValue("")
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("email").setValue(firebaseAuth.currentUser?.email.toString())
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("verification").setValue("verified")
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("saved").setValue("")
+                    dbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString()).child("profile").setValue(account.photoUrl.toString())
+
+
+                }
+
+                val intent = Intent(this, HomePage::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (GoogleSignIn.getLastSignedInAccount(this) != null) {
+            startActivity(
+                Intent(
+                    this, HomePage
+                    ::class.java
+                )
+            )
+            finish()
+        }
     }
 
 
