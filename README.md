@@ -6,8 +6,8 @@ release master version 1.0(0.01)
 ![featuregraphic](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/14e845b2-818d-4397-b748-799226a83759)
 
 Key Features:
-● powered by GPT3.5 trained model
-● Unlimited questions and answers
+● powered by GPT3.5 trained model\n
+● Unlimited questions and answers\n
 ● Multi-language support (140+ languages)
 
 
