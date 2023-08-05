@@ -1,6 +1,5 @@
 # AskGPT-Ai
 release master version 1.0(0.01)
-![applogo](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/ecbca33d-5eae-4d29-b942-ca17249ed776)
 
 "AskGPT-Ai" is AI chatbot powered by Custom GPT-3.5 trained API model
 
