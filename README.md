@@ -3,7 +3,8 @@ release master version 1.0(0.01)
 
 "AskGPT-Ai" is AI chatbot powered by Custom GPT-3.5 trained API model
 
-![featuregraphic](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/14e845b2-818d-4397-b748-799226a83759)
+![featuregraphic](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/774ba904-0368-44e0-b741-71c7f26536a5)
+
 
 Key Features:
 
@@ -14,7 +15,7 @@ Key Features:
 ● Multi-language support (140+ languages)
 
 
-![AskGPT-Ai-description](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/9722f617-e805-46ac-aa78-6816a061875c)
+<img width="1800" alt="AskGPT-Ai-description" src="https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/1597039f-7f6c-4baf-9387-e07564235921">
 
 
 
