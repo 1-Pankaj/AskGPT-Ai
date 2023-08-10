@@ -1,5 +1,7 @@
 # AskGPT-Ai
-release master version 1.0(0.01)
+release master version 2(1.1)
+
+For more information about the developer of this project, visit : [https://pankajisrani.web.app](https://pankajisrani.web.app)
 
 "AskGPT-Ai" is AI chatbot powered by Custom GPT-3.5 trained API model
 
