@@ -27,6 +27,9 @@ import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -82,7 +85,9 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-
+        val adView = findViewById<AdView>(R.id.adView)
+        MobileAds.initialize(this)
+        adView.loadAd(AdRequest.Builder().build())
 
         try {
 
@@ -215,8 +220,8 @@ class HomePage : AppCompatActivity() {
 
                 if(maAuth.currentUser?.isEmailVerified == true) {
                     BottomSheetBehavior.from(bottomsheet).apply {
-                        peekHeight = 170
-                        this.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                        peekHeight = 400
+                        this.state = BottomSheetBehavior.STATE_EXPANDED
                     }
                     mainIllustration.startAnimation(main_illustration)
                     unleashText.startAnimation(remove_items)
@@ -305,20 +310,10 @@ class HomePage : AppCompatActivity() {
 
             val privacyCard = findViewById<CardView>(R.id.privacyCard)
 
-            privacyCard.setOnClickListener{
-                BottomSheetBehavior.from(infoCard).apply {
-                    peekHeight = 250
-                    this.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-                infoCardIcon.setImageResource(R.drawable.privacy)
-                infoCardText.setText("This application made with the intention of keeping privacy at priority" +
-                        ". Messages are reset everytime application reloads, save important messages to keep them permanently.")
-                BottomSheetBehavior.from(settings_bottomsheet).apply {
-                    peekHeight = 0
-                    this.state = BottomSheetBehavior.STATE_COLLAPSED
-                    this.state = BottomSheetBehavior.STATE_HIDDEN
-                }
-            }
+
+
+
+
             val helpCard = findViewById<CardView>(R.id.helpCard)
 
             val profileInfoCard = findViewById<CardView>(R.id.profileInfoCard)
@@ -475,7 +470,24 @@ class HomePage : AppCompatActivity() {
                     this.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
+            val privacyPolicyCard = findViewById<CardView>(R.id.privacyPolicyCard)
+            val closePrivacyPolicyCard = findViewById<CardView>(R.id.closePrivacyPolicyCard)
 
+            privacyCard.setOnClickListener{
+                privacyPolicyCard.visibility = View.VISIBLE
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 0
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    this.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+            closePrivacyPolicyCard.setOnClickListener{
+                privacyPolicyCard.visibility = View.GONE
+                BottomSheetBehavior.from(settings_bottomsheet).apply {
+                    peekHeight = 300
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
             appearance.setOnClickListener{
                 BottomSheetBehavior.from(infoCard).apply {
                     peekHeight = 250
@@ -789,39 +801,40 @@ class HomePage : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        val dbRef = FirebaseDatabase.getInstance().reference
-        val requestBody = RequestBody.create(JSON, jsonBody.toString())
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val apiKey = snapshot.child("Admin").child("API-KEY").value.toString()
-                val request: Request = Request.Builder()
-                    .url("https://api.openai.com/v1/images/generations")
-                    .header("Authorization", apiKey.toString()) //API KEYS GO HERE
-                    .post(requestBody)
-                    .build()
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        addResponse("Failure to load response")
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        val jsonObject = JSONObject(response.body?.string())
-                        val imageUrl = jsonObject.getJSONArray("data").getJSONObject(0).getString("url")
+//        val dbRef = FirebaseDatabase.getInstance().reference
+//        val requestBody = RequestBody.create(JSON, jsonBody.toString())
+//        dbRef.addListenerForSingleValueEvent(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                val apiKey = snapshot.child("Admin").child("API-KEY").value.toString()
+//                val request: Request = Request.Builder()
+//                    .url("https://api.openai.com/v1/images/generations")
+//                    .header("Authorization", apiKey.toString()) //API KEYS GO HERE
+//                    .post(requestBody)
+//                    .build()
+//                client.newCall(request).enqueue(object : Callback {
+//                    override fun onFailure(call: Call, e: IOException) {
+//                        addResponse("Failure to load response")
+//                    }
 //
-                        addToChat(imageUrl, "bot", true)
-                    }
+//                    override fun onResponse(call: Call, response: Response) {
+//                        val jsonObject = JSONObject(response.body?.string())
+//                        val imageUrl = jsonObject.getJSONArray("data").getJSONObject(0).getString("url")
+////
+//                        addToChat(imageUrl, "bot", true)
+//                    }
+//
+//                })
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(applicationContext, "Error retrieving data, reload application!", Toast.LENGTH_SHORT).show()
+//            }
+//
+//        })
 
-                })
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(applicationContext, "Error retrieving data, reload application!", Toast.LENGTH_SHORT).show()
-            }
-
-        })
-
-
-
+        addToChat("Image generation is currently under hold.\n\nAs Image generation by Ai is a resource consuming task, the developer " +
+                "of this application needs to generate a bit of revenue before starting image generation again. Stay tuned and support the developer!", "bot", false)
 
     }
 

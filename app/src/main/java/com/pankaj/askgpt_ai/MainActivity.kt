@@ -2,10 +2,9 @@ package com.pankaj.askgpt_ai
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,8 +21,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.os.postDelayed
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -397,6 +394,12 @@ class MainActivity : AppCompatActivity() {
                 buttonContinue.isEnabled = true
             }
             cardBack.isEnabled = false
+        }
+
+        textPolicy.setOnClickListener{
+            val uri = Uri.parse("https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/144ecad0-e5eb-4281-a255-531650712e8d/privacy") // missing 'http://' will cause crashed
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            startActivity(intent)
         }
 
         buttonContinue.setOnClickListener(){

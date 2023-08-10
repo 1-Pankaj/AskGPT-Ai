@@ -42,6 +42,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="80dp"
+        android:clickable="true"
         android:id="@+id/textPolicy"/>
     <com.google.android.material.button.MaterialButton
         android:layout_width="300dp"
@@ -102,7 +103,7 @@
                 android:background="@drawable/edittext"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:hint="Email or Phone no."
+                android:hint="Email"
                 android:textSize="14sp"/>
 
             <com.google.android.material.button.MaterialButton
@@ -381,7 +382,7 @@
                 android:background="@drawable/edittext"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:hint="Email or Phone no."
+                android:hint="Email address"
                 android:textSize="14sp"/>
             <EditText
                 android:layout_width="300dp"
@@ -529,7 +530,7 @@
                 android:background="@drawable/edittext"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:hint="Email"
+                android:hint="Email address"
                 android:textSize="14sp"/>
 
             <com.google.android.material.button.MaterialButton
