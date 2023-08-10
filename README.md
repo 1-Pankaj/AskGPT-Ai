@@ -39,4 +39,4 @@ https://docs.google.com/forms/d/1fKGcUPFK20NrzizGOhY-YSN44ABqnPp-Mb-u4aLpWqI/
 
 Privacy policy :-
 
-[https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/144ecad0-e5eb-4281-a255-531650712e8d/privacy](https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/d60926a5-b8ad-4f80-b63d-a47153729593/privacy)https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/d60926a5-b8ad-4f80-b63d-a47153729593/privacy
+[https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/144ecad0-e5eb-4281-a255-531650712e8d/privacy](https://doc-hosting.flycricket.io/askgpt-ai-privacy-policy/d60926a5-b8ad-4f80-b63d-a47153729593/privacy)
