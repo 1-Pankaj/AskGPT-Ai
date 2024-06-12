@@ -3,8 +3,6 @@
 
 release master version 2(1.1)
 
-For more information about the developer of this project, visit : [https://pankajisrani.web.app](https://pankajisrani.web.app)
-
 "AskGPT-Ai" is AI chatbot powered by Custom GPT-3.5 trained API model
 
 ![featuregraphic](https://github.com/1-Pankaj/AskGPT-Ai/assets/113083122/774ba904-0368-44e0-b741-71c7f26536a5)
